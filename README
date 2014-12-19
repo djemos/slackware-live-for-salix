@@ -11,4 +11,4 @@ A GUI for the installation program and a synchronization tool (for home director
 This creates an initrd and a Salix Live iso and also is used to install the live iso creating a new user and a password. 
 Can also install the live iso as a frugal installation to a usb to use persistence.
 
-All changes made for salix are on paches.patch file
+All changes made for salix are on patches.patch file
