@@ -8,7 +8,7 @@ Slackware Live is a live DVD/USB/NFS build and install tool written for Slackwar
 
 A GUI for the installation program and a synchronization tool (for home directory backup/restore) are provided separately;
 
-This creates an initrd and a Salix ive iso and also is used to install the live iso creating a new user and a password. 
+This creates an initrd and a Salix Live iso and also is used to install the live iso creating a new user and a password. 
 Can also install the live iso as a frugal installation to a usb to use persistence.
 
 All changes made for salix are on paches.patch file
