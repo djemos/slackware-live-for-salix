@@ -1,6 +1,6 @@
-diff -Naur slackware-live-0.4.1-orig/scripts/build-slackware-live.sh slackware-live-0.4.1/scripts/build-slackware-live.sh
---- slackware-live-0.4.1-orig/scripts/build-slackware-live.sh	2015-07-18 13:46:20.800153443 +0300
-+++ slackware-live-0.4.1/scripts/build-slackware-live.sh	2015-07-18 14:30:59.841295933 +0300
+diff -Naur slackware-live-0.4-orig/scripts/build-slackware-live.sh slackware-live-0.4/scripts/build-slackware-live.sh
+--- slackware-live-0.4-orig/scripts/build-slackware-live.sh	2015-09-03 19:16:15.469863696 +0300
++++ slackware-live-0.4/scripts/build-slackware-live.sh	2015-09-03 19:20:02.379842910 +0300
 @@ -1,11 +1,18 @@
  #!/bin/sh
  
@@ -209,8 +209,8 @@ diff -Naur slackware-live-0.4.1-orig/scripts/build-slackware-live.sh slackware-l
 +	username=$4
 +	userpassword=$5
 +	installation_mode=$6
-+	home_dir=$7
-+	bootloader=$8
++	bootloader=$7
++	home_dir=$8
  	
 -	mkfs.$SYSINSTALLFS $systempart || return $FORMATERROR
 +	SYSINSTALLFS="ext4" # set default filesystem of root
@@ -660,7 +660,7 @@ diff -Naur slackware-live-0.4.1-orig/scripts/build-slackware-live.sh slackware-l
  			exit $INSUFFICIENTSPACE
  		else
 -			install_system $rootdirectory $systempart $loadersetup
-+			install_system $rootdirectory $systempart $loadersetup $username $userpassword $installation_mode $home_dir $bootloader
++			install_system $rootdirectory $systempart $loadersetup $username $userpassword $installation_mode $bootloader $home_dir 
  			exit $!
  		fi
  	else
@@ -678,9 +678,9 @@ diff -Naur slackware-live-0.4.1-orig/scripts/build-slackware-live.sh slackware-l
  	echo "`basename $0` --share live_dir listen_interface ip_range [modules_list|auto]"
  	echo "`basename $0` --unshare"
  	exit $CMDERROR
-diff -Naur slackware-live-0.4.1-orig/scripts/init slackware-live-0.4.1/scripts/init
---- slackware-live-0.4.1-orig/scripts/init	2015-07-18 13:46:20.800153443 +0300
-+++ slackware-live-0.4.1/scripts/init	2015-07-18 13:43:30.895921000 +0300
+diff -Naur slackware-live-0.4-orig/scripts/init slackware-live-0.4/scripts/init
+--- slackware-live-0.4-orig/scripts/init	2015-09-03 19:16:15.470863687 +0300
++++ slackware-live-0.4/scripts/init	2015-09-03 19:17:55.119977273 +0300
 @@ -1,5 +1,8 @@
  #!/bin/ash
  
