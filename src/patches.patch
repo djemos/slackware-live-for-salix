@@ -1,39 +1,15 @@
-diff -Naur slackware-live-0.4.5.orig/doc/AUTHORS slackware-live-0.4.5/doc/AUTHORS
---- slackware-live-0.4.5.orig/doc/AUTHORS	2010-07-20 18:29:52.000000000 +0300
-+++ slackware-live-0.4.5/doc/AUTHORS	2015-10-15 23:09:41.313325220 +0300
-@@ -1,4 +1,5 @@
- Developpers:
-+- Dimitris Tzemos <djemos@slackel.gr>
- - Frank Endres <frankendres@tuxfamily.org>
- - Sebastian Reisse <sebastian.j.reisse@gmx.net>
- 
-diff -Naur slackware-live-0.4.5.orig/doc/ChangeLog slackware-live-0.4.5/doc/ChangeLog
---- slackware-live-0.4.5.orig/doc/ChangeLog	2014-01-24 18:55:28.000000000 +0200
-+++ slackware-live-0.4.5/doc/ChangeLog	2015-10-15 23:22:17.864029948 +0300
-@@ -1,3 +1,12 @@
-+2015-10-11: Slackware-Live-0.4.5:
-+	- added support to format partitions using different filesystems (btrfs,ext2,ext3,ext4,reiserfs,jfs,xfs) by [Dimitris Tzemos <djemos@slackel.gr>]
-+2014-05-04: Dimitris Tzemos (djemos@slackel.gr) corrections for slackel, salix.
-+    + add support for setting root password at installation on hard disk
-+	+ add support for creation a new user and password and remove the liveuser
-+	+ add support for setting the keyboard correctly at boot time for greek land other locales.
-+    + remove automatic mounting devices on /mnt at boot time. This is done by PCmanFM so greek locale ntfs partitions mounted the write way.
-+	+ added partition manager connectivity in gui by [Dimitris Tzemos <djemos@slackel.gr>]
-+	+ added support for core, basic, full mode installation by [Dimitris Tzemos <djemos@slackel.gr>]	
- 2014-01-24: Slackware-Live-0.4: add support for UEFI & GPT
- 	+ add tz (timezone) & hwc (hardwareclock) boot options
- 	+ support persistent home and changes on partition (fixed disk or usb)
-diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-live-0.4.5/scripts/build-slackware-live.sh
---- slackware-live-0.4.5.orig/scripts/build-slackware-live.sh	2014-02-11 22:32:24.000000000 +0200
-+++ slackware-live-0.4.5/scripts/build-slackware-live.sh	2015-10-25 16:30:20.012063558 +0200
-@@ -1,11 +1,18 @@
+diff -Naur slackware-live-0.4.orig/scripts/build-slackware-live.sh slackware-live-0.4/scripts/build-slackware-live.sh
+--- slackware-live-0.4.orig/scripts/build-slackware-live.sh	2014-02-11 22:32:24.000000000 +0200
++++ slackware-live-0.4/scripts/build-slackware-live.sh	2016-08-31 21:02:08.986215536 +0300
+@@ -1,4 +1,7 @@
  #!/bin/sh
- 
-+LIVELABEL="LIVE" #edit in init script too
++#Dimitris Tzemos <dijemos@gmail.com> (changes for slackel,salix)
 +
++LIVELABEL="LIVE" #edit in init script too
+ 
  CMDERROR=1
  PARTITIONERROR=2
- FORMATERROR=3
+@@ -6,6 +9,11 @@
  BOOTERROR=4
  INSUFFICIENTSPACE=5
  
@@ -45,7 +21,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  function add_packages() {
  	packagesdirectory=$1
  	rootdirectory=$2
-@@ -57,9 +64,9 @@
+@@ -57,9 +65,9 @@
  	umount $rootdirectory/proc
  	rm -f $rootdirectory/tmp/initrd.gz
  	rm -f $rootdirectory/tmp/initrd-tree/{initrd-name,keymap,luksdev,resumedev,rootfs,rootdev,wait-for-root}
@@ -57,7 +33,15 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  	cp $initscriptbasepath/sbin/build-slackware-live.sh $rootdirectory/tmp/initrd-tree/
  	
  	for prg in unionfs mkfs.ext3; do
-@@ -86,18 +93,23 @@
+@@ -72,6 +80,7 @@
+ 		done
+ 	done
+ 	
++	
+ 	find $rootdirectory/tmp/initrd-tree/lib/modules/ -name "*.ko" | xargs strip --strip-unneeded
+ 	cwd=`pwd`
+ 	cd $rootdirectory/tmp/initrd-tree
+@@ -86,18 +95,23 @@
  	#BIOS/syslinux
  	mkdir -p $livedirectory/boot/syslinux
  	cp /usr/share/syslinux/menu.c32 $livedirectory/boot/syslinux/
@@ -88,7 +72,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  	#UEFI/elilo
  	if [ `uname -m` == "x86_64" ]; then
  		mkdir -p $livedirectory/EFI/BOOT
-@@ -105,17 +117,23 @@
+@@ -105,17 +119,23 @@
  		cp $livedirectory/boot/initrd.gz $livedirectory/EFI/BOOT/
  		cp $livedirectory/boot/vmlinuz $livedirectory/EFI/BOOT/
  		if [ ! -f $livedirectory/EFI/BOOT/elilo.conf ]; then
@@ -106,7 +90,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
 +				cp ../common/elilo/* $livedirectory/EFI/BOOT/
 +			fi	
  		fi
-+
++		
 +#		if [ ! -f $livedirectory/EFI/BOOT/elilo.conf ]; then
 +#			cat > $livedirectory/EFI/BOOT/elilo.conf << EOF
 +#prompt
@@ -122,7 +106,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  		dd if=/dev/zero of=/tmp/efi.img bs=1k count=16384
  		mkdosfs -n "EFIBOOT" /tmp/efi.img
  		mount -o loop /tmp/efi.img /mnt/floppy
-@@ -253,7 +271,7 @@
+@@ -253,7 +273,7 @@
  	if [ `uname -m` == "x86_64" ]; then
  		altboot="-eltorito-alt-boot -no-emul-boot -eltorito-platform efi -eltorito-boot efi.img"
  	fi
@@ -131,7 +115,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  		-b boot/syslinux/isolinux.bin -boot-load-size 4 -boot-info-table -no-emul-boot \
  		-c boot/syslinux/boot.catalog -hide boot.catalog -hide-joliet boot.catalog $altboot \
  	   $livedirectory
-@@ -273,13 +291,18 @@
+@@ -273,15 +293,20 @@
  
  	if [ "$installdevice" == "$installmedia" ]; then #install on whole disk: partition and format media
  		if [ `uname -m` == "x86_64" ]; then #EFI/GPT
@@ -151,15 +135,19 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
 +			fat32option="-F 32"
 +			mkfs.vfat $fat32option -n "$LIVELABEL" $installmedia || return $FORMATERROR
  		else #BIOS/MBR
- 			partitionnumber=4
+-			partitionnumber=4
++			partitionnumber=1
  			installmedia="$installdevice$partitionnumber"
-@@ -289,9 +312,12 @@
+ 			if (( $mediasize < 2048 ))
+ 			then heads=128; sectors=32
+@@ -289,9 +314,13 @@
  			fi
  			mkdiskimage $installdevice 1 $heads $sectors || return $PARTITIONERROR
  			dd if=/dev/zero of=$installdevice bs=1 seek=446 count=64 >/dev/null 2>&1
 -			echo -e ',0\n,0\n,0\n,,83,*' | sfdisk $installdevice || return $PARTITIONERROR
 +			#echo -e ',0\n,0\n,0\n,,83,*' | sfdisk $installdevice || return $PARTITIONERROR
-+			echo -e ',0\n,0\n,0\n,,b,*' | sfdisk $installdevice || return $PARTITIONERROR
++			#echo -e ',0\n,0\n,0\n,,b,*' | sfdisk $installdevice || return $PARTITIONERROR
++			echo -e ',,b,*' | sfdisk $installdevice || return $PARTITIONERROR
  			partprobe $installdevice; sleep 3
 -			mkfs.ext3 -L "Slackware-Live" $installmedia || return $FORMATERROR
 +			#mkfs.ext3 -L "$LIVELABEL" $installmedia || return $FORMATERROR
@@ -168,7 +156,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  		fi
  		sleep 3
  	
-@@ -303,14 +329,14 @@
+@@ -303,14 +332,14 @@
  			umount /mnt/tmp
  			fsck -fy $installmedia >/dev/null 2>&1
  		else #format partition
@@ -185,7 +173,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  				;;
  			*)
  				partition=`echo $installmedia | cut -c6-`
-@@ -319,30 +345,30 @@
+@@ -319,30 +348,30 @@
  				if (( $size > 1024 )); then
  					fat32option="-F 32"
  				fi
@@ -234,13 +222,11 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  	
  	mkdir -p /mnt/install
  	mount $installmedia /mnt/install
-@@ -374,21 +400,106 @@
+@@ -374,21 +403,116 @@
  	rootdirectory=$1
  	systempart=$2
  	loadersetup=$3
 -	SYSINSTALLFS="ext4"
--	
--	mkfs.$SYSINSTALLFS $systempart || return $FORMATERROR
 +	username=$4
 +	userpassword=$5
 +	installation_mode=$6
@@ -253,16 +239,20 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
 +	if [ "$SYSINSTALLFS" == "" ]; then
 +	 SYSINSTALLFS="ext4" # set default filesystem of root
 +	fi
+ 	
+-	mkfs.$SYSINSTALLFS $systempart || return $FORMATERROR
  
  	mkdir -p /mnt/install
 +		
-+	#if mount $systempart /mnt/install 2>/dev/null; then  # if there is a filesystem find it
++	if mount $systempart /mnt/install 2>/dev/null; then  # if there is a filesystem find it
 +	#	fs=`mount | grep "$systempart" | cut -f5 -d' '`
 +	#	if echo $fs | grep -q "ext" || echo $fs | grep -q "btrfs" || echo $fs | grep -q "reiserfs"|| echo $fs | grep -q "jfs"|| echo $fs | grep -q "xfs"; then
 +	#		SYSINSTALLFS=$fs  # find filesystem type
 +	#	fi
 +		umount /mnt/install	
-+	#fi
++	else 
++		umount /mnt/install	
++	fi
 +	
 +	fs=$SYSINSTALLFS
 +	
@@ -281,27 +271,34 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
 +	elif [ "$fs" = "xfs" ]; then
 +	   flag=" -f -q "   
 +	fi
-+	 
++	echo "formatting linux partition in $SYSINSTALLFS"
 +	mkfs.$SYSINSTALLFS $flag $systempart || return $FORMATERROR  # format partition
-+
++    echo "mount linux partition to /mnt/install"
  	mount $systempart /mnt/install
- 
+-
++    
 +    #handles home partition
 +	if [ "$home_dir" != "" ] && [ "$home_dir" != "$systempart" ]; then
 +		mkdir -p /mnt/install/home
++		if mount $home_dir /mnt/install/home 2>/dev/null; then  # if there is a filesystem find it
++			fs=`mount | grep "$home_dir" | cut -f5 -d' '`
++			if echo $fs | grep -q "ext" || echo $fs | grep -q "btrfs" || echo $fs | grep -q "reiserfs"|| echo $fs | grep -q "jfs"|| echo $fs | grep -q "xfs"; then
++				SYSINSTALLFS=$fs  # find filesystem type
++			fi
++			umount /mnt/install/home	
++		fi
 +		if [ "$format_home" = "yes" ]; then
++			echo "formatting home partition in $SYSINSTALLFS"
 +			mkfs.$SYSINSTALLFS $flag $home_dir
 +		fi
++		echo "mount home partition to /mnt/install/home"
 +		mount $home_dir /mnt/install/home
 +			
 +	#	if ! mount $home_dir /mnt/install/home 2>/dev/null; then
 +	#		mkfs.$SYSINSTALLFS $flag $home_dir
 +	#		mount $home_dir /mnt/install/home
 +	#	fi
-+		#fs=`mount | grep "$home_dir" | cut -f5 -d' '`
-+		#if echo $fs | grep -q "ext" || echo $fs | grep -q "btrfs" || echo $fs | grep -q "reiserfs"|| echo $fs | grep -q "jfs"|| echo $fs | grep -q "xfs"; then
-+		#	echo "$home_dir /home $fs defaults 1 1" >> /mnt/install/etc/fstab
-+		#fi
++		
 +    fi
 +    
  	#Copy begin
@@ -312,7 +309,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
 +	# core, basic or full mode
 +	if [ "$installation_mode" = "core" ]; then
 +		echo "core installation"
-+		modules=(01-core.slm 04-common.slm 05-kernel.slm 06-live.slm)
++		modules=(01-aaa.slm 02-core.slm 05-common.slm 06-kernel.slm 07-live.slm)
 +		for directory in ${modules[@]}; do
 +			cp -dpr $rootdirectory/$directory/* /mnt/install/
 +		done
@@ -320,7 +317,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
 +	
 +	if [ "$installation_mode" = "basic" ]; then
 +		echo "basic installation"
-+		modules=(01-core.slm 02-basic.slm 04-common.slm 05-kernel.slm 06-live.slm)
++		modules=(01-aaa.slm 02-core.slm 03-basic.slm 05-common.slm 06-kernel.slm 07-live.slm)
 +		for directory in ${modules[@]}; do
 +			cp -dpr $rootdirectory/$directory/* /mnt/install/
 +		done
@@ -328,7 +325,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
 +	
 +	if [ "$installation_mode" = "full" ]; then
 +		echo "full installation"
-+		modules=(01-core.slm 02-basic.slm 03-full.slm 04-common.slm 05-kernel.slm 06-live.slm)
++		modules=(01-aaa.slm 02-core.slm 03-basic.slm 04-full.slm 05-common.slm 06-kernel.slm 07-live.slm)
 +		for directory in ${modules[@]}; do
 +			cp -dpr $rootdirectory/$directory/* /mnt/install/
 +		done
@@ -341,14 +338,15 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  	mkdir -p /mnt/install/{dev,proc,sys,tmp}
  	cp -dpr /dev/sd* /mnt/install/dev/ #create disk nodes needed for LiLo
 -	cp -dpr $rootdirectory/lib/udev/devices/* /mnt/install/dev/
-+	if [ "$rootdirectory" = "/live/modules" ]; then
-+		cp -dpr /live/system/lib/udev/devices/* /mnt/install/dev/
-+	fi
++	for dir in sys proc dev; do mount --bind /$dir /mnt/install/$dir; done
++	#if [ "$rootdirectory" = "/live/modules" ]; then
++	#	cp -dpr /live/system/lib/udev/devices/* /mnt/install/dev/
++	#fi
 +	#cp -dpr $rootdirectory/lib/udev/devices/* /mnt/install/dev/
  
  	sed -i /^root:/d /mnt/install/etc/shadow #setup root password
  	cat /etc/shadow | sed -n /^root:/p >> /mnt/install/etc/shadow
-@@ -397,8 +508,8 @@
+@@ -397,8 +521,8 @@
  		cp -f /etc/rc.d/rc.keymap /mnt/install/etc/rc.d/
  	fi
  	cp -f /etc/profile.d/lang.sh /mnt/install/etc/profile.d/
@@ -359,7 +357,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  	fi
  	if [ -f /etc/X11/xorg.conf ]; then
  		cp -f /etc/X11/xorg.conf /mnt/install/etc/X11/
-@@ -411,23 +522,75 @@
+@@ -411,23 +535,76 @@
  		cp -f /etc/hardwareclock /mnt/install/etc/
  	fi
  	#Copy end
@@ -372,27 +370,28 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
 +tmpfs /dev/shm tmpfs defaults 0 0
  $systempart / $SYSINSTALLFS defaults 1 1
  EOF
+-	cat /etc/fstab | grep " swap " >> /mnt/install/etc/fstab
+-	cat /etc/fstab | grep "/mnt" |  grep -v "$systempart" >> /mnt/install/etc/fstab
+-	cat /etc/fstab | grep "/mnt" |  grep -v "$systempart" | cut -f2 -d' ' | while read mountpoint; do
+-		mkdir /mnt/install$mountpoint
+-	done
 +
 +	if [ "$home_dir" != "" ] && [ "$home_dir" != "$systempart" ]; then
-+		fs=`mount | grep "$home_dir" | cut -f5 -d' '`
++		fs=`mount | grep "$home_dir" | cut -f5 -d' '` > /dev/null 2>&1
 +		if echo $fs | grep -q "ext" || echo $fs | grep -q "btrfs" || echo $fs | grep -q "reiserfs"|| echo $fs | grep -q "jfs"|| echo $fs | grep -q "xfs"; then
 +			echo "$home_dir /home $fs defaults 1 1" >> /mnt/install/etc/fstab
 +		fi
 +	fi
 +	
- 	cat /etc/fstab | grep " swap " >> /mnt/install/etc/fstab
--	cat /etc/fstab | grep "/mnt" |  grep -v "$systempart" >> /mnt/install/etc/fstab
--	cat /etc/fstab | grep "/mnt" |  grep -v "$systempart" | cut -f2 -d' ' | while read mountpoint; do
--		mkdir /mnt/install$mountpoint
--	done
++	#cat /etc/fstab | grep " swap " >> /mnt/install/etc/fstab
++	
 +	#cat /etc/fstab | grep "/mnt" |  grep -v "$systempart" >> /mnt/install/etc/fstab
 +	#cat /etc/fstab | grep "/mnt" |  grep -v "$systempart" | cut -f2 -d' ' | while read mountpoint; do
 +	#	mkdir /mnt/install$mountpoint
 +	#done
  	echo "$systempart / $SYSINSTALLFS defaults 1 1" > /mnt/install/etc/mtab
  	#FSTab end
--	
-+
++    
 +    # First, determine our slackware kernel name:
 +	for ELEMENT in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 ; do
 +	if $(cat /proc/cmdline | cut -f $ELEMENT -d ' ' | grep -q BOOT_IMAGE) ; then
@@ -411,7 +410,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
 +	fi
 +	done
 +	unset ELEMENT
-+
+ 	
 +	( cd /mnt/install/boot
 +	if [ "$SLACK_KERNEL" == "vmlinuz" ]; then
 +	 if [ -r vmlinuz-huge-smp-$VERSION ]; then
@@ -441,7 +440,15 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  		kv=`basename /mnt/install/lib/modules/*`
  		if lsmod | grep -q $SYSINSTALLFS; then
  			moduleslist="$SYSINSTALLFS"
-@@ -451,10 +614,11 @@
+@@ -445,16 +622,17 @@
+ 		done
+ 		moduleslist=`echo $moduleslist | sed 's/:$//'`
+ 		if [ ! -z "$moduleslist" ] && [ "$moduleslist" != "sg" ]; then
+-			chroot /mnt/install mount /proc
++			#chroot /mnt/install mount /proc
+ 			chroot /mnt/install mkinitrd -c -f $SYSINSTALLFS -r $systempart -k $kv -m $moduleslist
+-			chroot /mnt/install umount /proc
++			#chroot /mnt/install umount /proc
  		fi
  	fi
  	#InitRD end
@@ -454,7 +461,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  		if [ -d /sys/firmware/efi ]; then #UEFI
  			modprobe efivars
  			efipartnum=`gdisk -l $installdevice | grep "EF00" | sed 's/  \+/ /g' | cut -f2 -d' '`
-@@ -462,7 +626,7 @@
+@@ -462,7 +640,7 @@
  			if [ ! -z "$efipartition" ]; then
  				mkdir -p /mnt/efi
  				mount $efipartition /mnt/efi
@@ -463,7 +470,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  				if [ -d /mnt/efi/EFI/$efilabel ]; then
  					conflictpart=`cat /mnt/efi/EFI/$efilabel/elilo.conf | grep "append" | sed 's/.*root=\([^ ]*\).*/\1/'`
  					if [ "$conflictpart" == "$systempart" ]
-@@ -476,10 +640,10 @@
+@@ -476,10 +654,10 @@
  				cp /mnt/install/boot/vmlinuz /mnt/efi/EFI/$efilabel/
  				cat > /mnt/efi/EFI/$efilabel/elilo.conf << EOF
  timeout=1
@@ -476,7 +483,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
      append="root=$systempart ro"
  	read-only
  EOF
-@@ -489,14 +653,14 @@
+@@ -489,14 +667,14 @@
  				fi
  				umount /mnt/efi
  				rmdir /mnt/efi
@@ -494,7 +501,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  bmp-colors = 255,0,255,0,255,0
  bmp-table = 60,6,1,16
  bmp-timer = 65,27,0,255
-@@ -514,7 +678,7 @@
+@@ -514,7 +692,7 @@
  
  image = /boot/vmlinuz
  root = $systempart
@@ -503,13 +510,19 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  read-only
  EOF
  			if [ -f /mnt/install/boot/initrd.gz ]; then
-@@ -534,7 +698,203 @@
- 			chroot /mnt/install umount /proc
- 		fi
- 	fi
--	#LiLo end
+@@ -529,16 +707,224 @@
+ table = $installdevice
+ EOF
+ 			fi
+-			chroot /mnt/install mount /proc
++			#chroot /mnt/install mount /proc
+ 			chroot /mnt/install lilo || return $BOOTERROR
+-			chroot /mnt/install umount /proc
++			#chroot /mnt/install umount /proc
++		fi
++	fi
 +   fi #LiLo end
-+
++  
 +   if [ "$bootloader" == "grub" ]; then
 +	#grub begin
 +	if [ "$loadersetup" == "-auto" ]; then
@@ -530,12 +543,13 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
 +			fi
 +			grub-install --efi-directory /mnt/efi --boot-directory /mnt/install/boot/ --target=x86_64-efi 2>/dev/null && grubstatus=0
 +			umount /mnt/efi
++			rmdir /mnt/efi
 +			# Add the EFI System Partition to /etc/fstab:
 +			mkdir -p /mnt/install/boot/efi
 +			echo "$efipartition /boot/efi vfat defaults 1 0 " >> /mnt/install/etc/fstab
 +		else #CSM
 +			if echo -e "print\nquit" | parted $installdevice | grep -q ": msdos$" || 
-+			gdisk -l $installdevice 2>/dev/null | grep -q " EF02 "; then
++				gdisk -l $installdevice 2>/dev/null | grep -q " EF02 "; then
 +				grub-install --target=i386-pc --boot-directory /mnt/install/boot $installdevice  && grubstatus=0 #grub-bios-setup
 +			else
 +				echo "Warning : GRUB can't be installed:"
@@ -546,35 +560,35 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
 +					echo "- CSM (legacy) boot: no 'ef02' - BIOS boot partition on $installdevice (GPT)"
 +				fi
 +			fi
-+		fi
-+		for dir in sys proc dev; do mount --bind /$dir /mnt/install/$dir; done
+ 		fi
++		#for dir in sys proc dev; do mount --bind /$dir /mnt/install/$dir; done
 +		chroot /mnt/install grub-mkconfig -o /boot/grub/grub.cfg
-+		for dir in sys proc dev; do umount /mnt/install/$dir; done
++		#for dir in sys proc dev; do umount /mnt/install/$dir; done
 +	fi
 +   fi # end grub
-+
++	
 +	liveuser=$(cat /etc/passwd | grep /bin/bash | grep /home/| cut -d : -f 1)
 +	if [ "$liveuser" != "" ]; then 
 +		echo "Deleting liveuser $liveuser"
-+		chroot /mnt/install mount /proc
-+		chroot /mnt/install /usr/sbin/userdel -r $liveuser 2>/dev/null
-+		chroot /mnt/install umount /proc
++		#chroot /mnt/install mount /proc
++		chroot /mnt/install /usr/sbin/userdel -r $liveuser  2>/dev/null
++		#chroot /mnt/install umount /proc
 +	fi
 +	
 +	if [ "$username" != "" ]; then 
 +		echo "Creating user $username with password $userpassword"
-+		chroot /mnt/install mount /proc
-+		chroot /mnt/install /usr/sbin/useradd -s /bin/bash -g users -m -k /etc/skel -G lp,floppy,audio,video,cdrom,plugdev,power,netdev,scanner,wheel "$username"
-+		chroot /mnt/install umount /proc
++		#chroot /mnt/install mount /proc
++		chroot /mnt/install /usr/sbin/useradd -s /bin/bash -g users -m -k /etc/skel -G audio,video,cdrom,floppy,lp,plugdev,polkitd,power,pulse,netdev,scanner,wheel "$username"
++		#chroot /mnt/install umount /proc
 +	fi
 +	
 +	if [ "$userpassword" != "" ]; then 
 +		echo "Setting password for user $username to $userpassword"
-+		chroot /mnt/install mount /proc
-+		echo ${username}:${userpassword} | chroot /mnt/install chpasswd
-+		chroot /mnt/install umount /proc
++		#chroot /mnt/install mount /proc
++		echo ${username}:${userpassword} | chroot /mnt/install chpasswd 
++		#chroot /mnt/install umount /proc
 +	fi
-+
++	
 +	if [ -f /mnt/install/etc/kde/kdm/kdmrc ]; then
 +	  sed -i "s/NoPassEnable=.*/NoPassEnable=/g" /mnt/install/etc/kde/kdm/kdmrc
 +	  sed -i "s/NoPassUsers=.*/NoPassUsers=/g" /mnt/install/etc/kde/kdm/kdmrc
@@ -582,6 +596,8 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
 +	  sed -i "s/AllowNullPasswd=.*/AllowNullPasswd=/g" /mnt/install/etc/kde/kdm/kdmrc
 +	  sed -i "s/AutoLoginEnable=.*/AutoLoginEnable=/g" /mnt/install/etc/kde/kdm/kdmrc
 +	  sed -i "s/AutoLoginUser=.*/AutoLoginUser=/g" /mnt/install/etc/kde/kdm/kdmrc
++	  locale_noutf8=`cat /etc/kde/kdm/kdmrc | grep Language= | sed 's/\Language=//'`
++	  sed -i "s/\(^\|^#\)Language=.*/Language=$locale_noutf8/" /mnt/install/etc/kde/kdm/kdmrc
 +	fi
 +
 +	
@@ -668,47 +684,74 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
 +# defined in the GDM System Defaults configuration file.
 +#
 +EOF
-+	fi
-+	
+ 	fi
+-	#LiLo end
+ 	
 +	echo "Removing installer"
-+	chroot /mnt/install mount /proc
 +	chroot /mnt/install rm -f /home/one/Desktop/sli*.desktop
-+	chroot /mnt/install spkg -d sli
-+	chroot /mnt/install umount /proc
++	
++	chroot /mnt/install /sbin/spkg -d sli
 +	
 +	# Run various slackware install routines
-+	echo "Run various slackware install routines"
-+	chroot /mnt/install mount /proc
-+	if [ -f /mnt/install/var/log/setup/setup.04.mkfontdir ]; then
-+		chroot /mnt/install /var/log/setup/setup.04.mkfontdir
-+	fi
++	#echo "Run various slackware install routines"
 +	
-+	if [ -f mnt/install/var/log/setup/setup.08.gtk-update-icon-cache ]; then
-+		chroot /mnt/install /var/log/setup/setup.08.gtk-update-icon-cache
-+	fi
++	#echo "run mkfont"
++	#if [ -f /mnt/install/var/log/setup/setup.04.mkfontdir ]; then
++	#	chroot /mnt/install /var/log/setup/setup.04.mkfontdir
++	#fi
++	#echo " update-icon-cache"
++	#if [ -f /mnt/install/var/log/setup/setup.08.gtk-update-icon-cache ]; then
++	#	chroot /mnt/install /var/log/setup/setup.08.gtk-update-icon-cache
++	#fi
++	#echo "run update all"
++	#if [ -f /mnt/install/usr/sbin/update-all ]; then
++	#	chroot /mnt/install /usr/sbin/update-all
++	#fi
++	#echo "run setup services"
++	#if [ -f /mnt/install/var/log/setup/setup.services ]; then
++	#	chroot /mnt/install /var/log/setup/setup.services
++	#fi
 +	
-+	if [ -f mnt/install/usr/sbin/update-all ]; then
-+		chroot /mnt/install /usr/sbin/update-all
-+	fi
-+	
-+	if [ -f mnt/install/var/log/setup/setup.services ]; then
-+		chroot /mnt/install /var/log/setup/setup.services
-+	fi
-+	
-+	chroot /mnt/install umount /proc
-+	
-+	# Set the hostname.
++	# Set the hostname.echo "umount /mnt/install"
 +	chmod 777 /mnt/install/etc/HOSTNAME
 +	echo "darkstar.example.net" > /mnt/install/etc/HOSTNAME
 +	chmod 644 /mnt/install/etc/HOSTNAME  
-+	
++		
++	# Use any available swap device:
++    for SWAPD in $(blkid |grep TYPE="\"swap\"" |cut -d: -f1) ; do
++      echo "Enabling swapping to '$SWAPD'"
++      echo "$SWAPD  swap  swap defaults  0  0" >> /mnt/install/etc/fstab
++    done
++
++	for dir in sys proc dev; do umount /mnt/install/$dir; done
++
 +	if [ "$home_dir" != "" ] && [ "$home_dir" != "$systempart" ]; then
++		echo "umount /mnt/instal/home"
 +		umount /mnt/install/home
 +	fi
- 	
++	echo "umount /mnt/install"
  	umount /mnt/install
++
++	echo "remove /mnt/install"
  	rmdir /mnt/install
-@@ -730,6 +1090,14 @@
+-	
++	echo "end installation"
+ 	return 0
+ }
+ 
+@@ -659,7 +1045,10 @@
+ 	moduleslist=$4
+ 	if [ -d "$rootdirectory" ] && [ ! -z "$livedirectory" ]; then
+ 		if [ -z "$moduleslist" ]; then
+-			moduleslist="squashfs:fuse:loop:ehci-pci:xhci-hcd:usb-storage"
++			#moduleslist="squashfs:fuse:loop:ehci-pci:xhci-hcd:usb-storage"
++			#moduleslist="squashfs:fuse:loop:xhci-pci:ehci-pci:usb-storage:ext3:isofs"
++			#moduleslist="squashfs:fuse:loop:xhci-pci:ohci-pci:ehci-pci:xhci-hcd:uhci-hcd:ehci-hcd:usb-storage:hid:usbhid:hid-generic:hid-cherry:hid-logitech:hid-logitech-dj:hid-logitech-hidpp:hid-lenovo:hid-microsoft:jbd:mbcache:ext3:ext4:isofs:fat:nls_cp437:nls_iso8859-1:msdos:vfat"
++			moduleslist="squashfs:fuse:loop:xhci-pci:ohci-pci:ehci-pci:xhci-hcd:uhci-hcd:ehci-hcd:usb-storage:hid:usbhid:i2c-hid:hid-generic:hid-cherry:hid-logitech:hid-logitech-dj:hid-logitech-hidpp:hid-lenovo:hid-microsoft:hid_multitouch:isofs:nls_cp437:nls_iso8859-1"
+ 		fi
+ 		init_live $rootdirectory $livedirectory $moduleslist
+ 	else
+@@ -730,6 +1119,14 @@
  	rootdirectory=$2
  	systempart=$3
  	loadersetup=$4
@@ -723,11 +766,14 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  	if [ -d "$rootdirectory" ] && [ -b "$systempart" ]; then
  		systemsize=`du -s -m $rootdirectory | sed 's/\t.*//'`
  		device=`echo $systempart | cut -c6-8`
-@@ -741,11 +1109,11 @@
+@@ -741,11 +1138,14 @@
  			echo "error: insufficant space on device '$systempart'"
  			exit $INSUFFICIENTSPACE
  		else
 -			install_system $rootdirectory $systempart $loadersetup
++		  if [ "$home_dir" == "" ]; then
++			SYSINSTALLFS="ext4"
++		  fi
 +			install_system $rootdirectory $systempart $loadersetup $username $userpassword $installation_mode $bootloader $format_home $SYSINSTALLFS $home_dir
  			exit $!
  		fi
@@ -737,7 +783,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  		exit $CMDERROR
  	fi
  	;;
-@@ -780,7 +1148,7 @@
+@@ -780,7 +1180,7 @@
  	echo "`basename $0` --module root_dir live_dir module_file [-xz|-gzip] [-optional]"
  	echo "`basename $0` --iso live_dir iso_file"
  	echo "`basename $0` --usb live_dir device"
@@ -746,9 +792,9 @@ diff -Naur slackware-live-0.4.5.orig/scripts/build-slackware-live.sh slackware-l
  	echo "`basename $0` --share live_dir listen_interface ip_range [modules_list|auto]"
  	echo "`basename $0` --unshare"
  	exit $CMDERROR
-diff -Naur slackware-live-0.4.5.orig/scripts/init slackware-live-0.4.5/scripts/init
---- slackware-live-0.4.5.orig/scripts/init	2014-02-07 11:04:23.000000000 +0200
-+++ slackware-live-0.4.5/scripts/init	2015-10-15 22:07:49.142631000 +0300
+diff -Naur slackware-live-0.4.orig/scripts/init slackware-live-0.4/scripts/init
+--- slackware-live-0.4.orig/scripts/init	2014-02-07 11:04:23.000000000 +0200
++++ slackware-live-0.4/scripts/init	2016-08-31 20:04:46.120529000 +0300
 @@ -1,5 +1,8 @@
  #!/bin/ash
  
@@ -834,7 +880,26 @@ diff -Naur slackware-live-0.4.5.orig/scripts/init slackware-live-0.4.5/scripts/i
  		fi
  		if [ -d /slroot/live/media/$changes ] || [ -f /slroot/live/media/$changes ] || [ -b $changes ]; then
  			echo "Using persistent system storage ($changes)"
-@@ -262,25 +275,25 @@
+@@ -174,8 +187,10 @@
+ #setup system tree
+ for directory in /slroot/live/union/*; do #bind /live/union top directories into /
+ 	directoryname=`basename $directory`
++	if [[ -d "${directory}" && ! -L "${directory}" ]] ; then
+ 	mkdir /slroot/$directoryname
+ 	mount --bind $directory /slroot/$directoryname
++	fi
+ done
+ mkdir -p /slroot/tmp
+ mkdir -p /slroot/sys
+@@ -186,6 +201,7 @@
+ cat > /slroot/live/union/etc/fstab << END
+ proc /proc proc defaults 0 0
+ sysfs /sys sysfs defaults 0 0
++tmpfs /dev/shm tmpfs defaults 0 0
+ none / tmpfs defaults 0 0
+ END
+ 
+@@ -262,25 +278,25 @@
  			home=`echo "$home" | cut -f1 -d=`
  		fi
  		if [ ! -d /slroot/live/media/$home ] && [ ! -f /slroot/live/media/$home ] && [ ! -b $home ]; then #storage space creation
@@ -875,7 +940,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/init slackware-live-0.4.5/scripts/i
  		fi
  		if [ -d /slroot/live/media/$home ] || [ -f /slroot/live/media/$home ] || [ -b $home ]; then
  			echo "Setting up persistent home directory ($home)"
-@@ -308,7 +321,7 @@
+@@ -308,7 +324,7 @@
  #autologin
  runlevel=`cat /slroot/live/union/etc/inittab | sed -n /^id:[1-5]:initdefault:$/p | cut -f2 -d:`
  if [ $runlevel == 5 ]; then
@@ -884,23 +949,29 @@ diff -Naur slackware-live-0.4.5.orig/scripts/init slackware-live-0.4.5/scripts/i
  	
  	if [ -x /slroot/live/union/usr/bin/startx ]; then
  		cat  > /slroot/live/union/etc/profile.d/x.sh << END
-@@ -328,30 +341,59 @@
+@@ -328,30 +344,65 @@
  	then sed -i s/^export\ LANG=.*/export\ LANG=$locale/ /slroot/live/union/etc/profile.d/lang.sh
  	else echo "export LANG=$locale" >> /slroot/live/union/etc/profile.d/lang.sh
  	fi
 +	if [ -f /slroot/live/union/etc/kde/kdm/kdmrc ]; then
-+      locale_noutf8=$(echo $lang | sed 's/\.utf8//')
++      locale_noutf8=$(echo $locale | sed 's/\.utf8//')
 +      sed -i "s/\(^\|^#\)Language=.*/Language=$locale_noutf8/" /slroot/live/union/etc/kde/kdm/kdmrc
 +    fi    
 +    # Make firefox match OS locale
 +  # Now included in $DISTRONAME version, but keep it for other Slackware version or distro
-+  if [ -w /slroot/live/union/usr/lib$LIBSUFFIX/firefox/greprefs/all.js ]; then
-+    sed -i -e 's/pref("intl.locale.matchOS", false);/pref("intl.locale.matchOS", true);/g' /slroot/live/union/usr/lib$LIBSUFFIX/firefox/greprefs/all.js
++  #if [ -w /slroot/live/union/usr/lib$LIBSUFFIX/firefox/greprefs/all.js ]; then
++  # sed -i -e 's/pref("intl.locale.matchOS", false);/pref("intl.locale.matchOS", true);/g' /slroot/live/union/usr/lib$LIBSUFFIX/firefox/greprefs/all.js
++  #fi
++  if [ -w /slroot/live/union/usr/lib$LIBSUFFIX/firefox-*/defaults/pref/langpacks.js ]; then
++    sed -i -e 's/pref("intl.locale.matchOS", false);/pref("intl.locale.matchOS", true);/g' /slroot/live/union/usr/lib$LIBSUFFIX/firefox-*/defaults/pref/langpacks.js
 +  fi
 +  # Make thunderbird match OS locale
 +  # Now included in $DISTRONAME version, but keep it for other Slackware version or distro
-+  if [ -w /slroot/live/union/usr/lib$LIBSUFFIX/thunderbird/greprefs/all.js ]; then
-+    sed -i -e 's/pref("intl.locale.matchOS", false);/pref("intl.locale.matchOS", true);/g' /slroot/live/union/usr/lib$LIBSUFFIX/thunderbird/greprefs/all.js
++  #if [ -w /slroot/live/union/usr/lib$LIBSUFFIX/thunderbird/greprefs/all.js ]; then
++  #  sed -i -e 's/pref("intl.locale.matchOS", false);/pref("intl.locale.matchOS", true);/g' /slroot/live/union/usr/lib$LIBSUFFIX/thunderbird/greprefs/all.js
++  #fi
++  if [ -w /slroot/live/union/usr/lib$LIBSUFFIX/thunderbird-*/defaults/pref/langpacks.js ]; then
++    sed -i -e 's/pref("intl.locale.matchOS", false);/pref("intl.locale.matchOS", true);/g' /slroot/live/union/usr/lib$LIBSUFFIX/thunderbird-*/defaults/pref/langpacks.js
 +  fi
  fi
  
@@ -962,7 +1033,7 @@ diff -Naur slackware-live-0.4.5.orig/scripts/init slackware-live-0.4.5/scripts/i
  fi
  
  if [ ! -z "$tz" ]; then
-@@ -385,9 +427,9 @@
+@@ -385,9 +436,9 @@
  			else
  				echo "/dev/$partition none swap defaults,noauto 0 0" >> /slroot/live/union/etc/fstab
  			fi
