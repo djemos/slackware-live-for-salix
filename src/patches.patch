@@ -1,6 +1,6 @@
 diff -Naur slackware-live-0.4.orig/scripts/build-slackware-live.sh slackware-live-0.4/scripts/build-slackware-live.sh
 --- slackware-live-0.4.orig/scripts/build-slackware-live.sh	2014-02-11 22:32:24.000000000 +0200
-+++ slackware-live-0.4/scripts/build-slackware-live.sh	2016-08-31 21:02:08.986215536 +0300
++++ slackware-live-0.4/scripts/build-slackware-live.sh	2016-09-02 22:25:53.878170956 +0300
 @@ -1,4 +1,7 @@
  #!/bin/sh
 +#Dimitris Tzemos <dijemos@gmail.com> (changes for slackel,salix)
@@ -309,7 +309,7 @@ diff -Naur slackware-live-0.4.orig/scripts/build-slackware-live.sh slackware-liv
 +	# core, basic or full mode
 +	if [ "$installation_mode" = "core" ]; then
 +		echo "core installation"
-+		modules=(01-aaa.slm 02-core.slm 05-common.slm 06-kernel.slm 07-live.slm)
++		modules=(01-core.slm 04-common.slm 05-kernel.slm 06-live.slm)
 +		for directory in ${modules[@]}; do
 +			cp -dpr $rootdirectory/$directory/* /mnt/install/
 +		done
@@ -317,7 +317,7 @@ diff -Naur slackware-live-0.4.orig/scripts/build-slackware-live.sh slackware-liv
 +	
 +	if [ "$installation_mode" = "basic" ]; then
 +		echo "basic installation"
-+		modules=(01-aaa.slm 02-core.slm 03-basic.slm 05-common.slm 06-kernel.slm 07-live.slm)
++		modules=(01-core.slm 02-basic.slm 04-common.slm 05-kernel.slm 06-live.slm)
 +		for directory in ${modules[@]}; do
 +			cp -dpr $rootdirectory/$directory/* /mnt/install/
 +		done
@@ -325,7 +325,7 @@ diff -Naur slackware-live-0.4.orig/scripts/build-slackware-live.sh slackware-liv
 +	
 +	if [ "$installation_mode" = "full" ]; then
 +		echo "full installation"
-+		modules=(01-aaa.slm 02-core.slm 03-basic.slm 04-full.slm 05-common.slm 06-kernel.slm 07-live.slm)
++		modules=(01-core.slm 02-basic.slm 03-full.slm 04-common.slm 05-kernel.slm 06-live.slm)
 +		for directory in ${modules[@]}; do
 +			cp -dpr $rootdirectory/$directory/* /mnt/install/
 +		done
@@ -794,7 +794,7 @@ diff -Naur slackware-live-0.4.orig/scripts/build-slackware-live.sh slackware-liv
  	exit $CMDERROR
 diff -Naur slackware-live-0.4.orig/scripts/init slackware-live-0.4/scripts/init
 --- slackware-live-0.4.orig/scripts/init	2014-02-07 11:04:23.000000000 +0200
-+++ slackware-live-0.4/scripts/init	2016-08-31 20:04:46.120529000 +0300
++++ slackware-live-0.4/scripts/init	2016-09-02 21:54:41.278746539 +0300
 @@ -1,5 +1,8 @@
  #!/bin/ash
  
@@ -899,7 +899,17 @@ diff -Naur slackware-live-0.4.orig/scripts/init slackware-live-0.4/scripts/init
  none / tmpfs defaults 0 0
  END
  
-@@ -262,25 +278,25 @@
+@@ -227,6 +243,9 @@
+ 	-e 's@^\( *\)\([a-z/]*sync\)@\1: #\2@' \
+ 	-e 's@^\(.*umount.*\)$@\1 \>/dev/null 2\>\&1@' \
+ 	-i /slroot/live/union/etc/rc.d/rc.6
++sed -e 's@^\(.*umount -v -a -l -f -r -t nfs,smbfs,cifs.*\)$@umount -v -a -l -f -r -t nfs,smbfs,cifs \>/dev/null 2\>\&1@' -i /slroot/live/union/etc/rc.d/rc.6
++sed -e 's@^\(.*umount -v -a -t no,proc,sysfs.*\)$@umount -v -a -t no,proc,sysfs \>/dev/null 2\>\&1@' -i /slroot/live/union/etc/rc.d/rc.6
++
+ if [ -z "$changes" ]
+ then sed -e 's@^\(.*-o remount.*\)$@mount -o remount,ro /live/media #\1\n/bin/sync\n/bin/sleep 3@' -i /slroot/live/union/etc/rc.d/rc.6
+ else sed -e 's@^\(.*-o remount.*\)$@mount -o remount,ro /live/media\nmount -o remount,ro /live/changes #\1\nsync; sleep 3@' \
+@@ -262,25 +281,25 @@
  			home=`echo "$home" | cut -f1 -d=`
  		fi
  		if [ ! -d /slroot/live/media/$home ] && [ ! -f /slroot/live/media/$home ] && [ ! -b $home ]; then #storage space creation
@@ -940,7 +950,7 @@ diff -Naur slackware-live-0.4.orig/scripts/init slackware-live-0.4/scripts/init
  		fi
  		if [ -d /slroot/live/media/$home ] || [ -f /slroot/live/media/$home ] || [ -b $home ]; then
  			echo "Setting up persistent home directory ($home)"
-@@ -308,7 +324,7 @@
+@@ -308,7 +327,7 @@
  #autologin
  runlevel=`cat /slroot/live/union/etc/inittab | sed -n /^id:[1-5]:initdefault:$/p | cut -f2 -d:`
  if [ $runlevel == 5 ]; then
@@ -949,7 +959,7 @@ diff -Naur slackware-live-0.4.orig/scripts/init slackware-live-0.4/scripts/init
  	
  	if [ -x /slroot/live/union/usr/bin/startx ]; then
  		cat  > /slroot/live/union/etc/profile.d/x.sh << END
-@@ -328,30 +344,65 @@
+@@ -328,30 +347,65 @@
  	then sed -i s/^export\ LANG=.*/export\ LANG=$locale/ /slroot/live/union/etc/profile.d/lang.sh
  	else echo "export LANG=$locale" >> /slroot/live/union/etc/profile.d/lang.sh
  	fi
@@ -1033,14 +1043,22 @@ diff -Naur slackware-live-0.4.orig/scripts/init slackware-live-0.4/scripts/init
  fi
  
  if [ ! -z "$tz" ]; then
-@@ -385,9 +436,9 @@
- 			else
+@@ -386,8 +440,18 @@
  				echo "/dev/$partition none swap defaults,noauto 0 0" >> /slroot/live/union/etc/fstab
  			fi
--		else
+ 		else
 -			echo "/dev/$partition /mnt/$partition auto defaults,noauto,user 0 0" >> /slroot/live/union/etc/fstab
 -			mkdir -p /slroot/live/union/mnt/$partition
-+		#else
++			if [ "$partition" = "sda1" ]; then
++			    mkdir -p /slroot/live/union/boot/efi
++			    mount -t vfat /dev/$partition /slroot/live/union/boot/efi 2>/dev/null
++			    if [ -d /slroot/live/union/boot/efi/EFI ]; then
++					echo "/dev/$partition /boot/efi vfat defaults 1 0" >> /slroot/live/union/etc/fstab
++				    umount /slroot/live/union/boot/efi 2>/dev/null
++				else
++					umount /slroot/live/union/boot/efi 2>/dev/null
++				fi
++			fi	
 +		#	echo "/dev/$partition /mnt/$partition auto defaults,noauto,user 0 0" >> /slroot/live/union/etc/fstab
 +		#	mkdir -p /slroot/live/union/mnt/$partition
  		fi
