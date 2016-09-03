@@ -794,7 +794,7 @@ diff -Naur slackware-live-0.4.orig/scripts/build-slackware-live.sh slackware-liv
  	exit $CMDERROR
 diff -Naur slackware-live-0.4.orig/scripts/init slackware-live-0.4/scripts/init
 --- slackware-live-0.4.orig/scripts/init	2014-02-07 11:04:23.000000000 +0200
-+++ slackware-live-0.4/scripts/init	2016-09-02 21:54:41.278746539 +0300
++++ slackware-live-0.4/scripts/init	2016-09-03 18:51:55.877775473 +0300
 @@ -1,5 +1,8 @@
  #!/bin/ash
  
@@ -1043,7 +1043,7 @@ diff -Naur slackware-live-0.4.orig/scripts/init slackware-live-0.4/scripts/init
  fi
  
  if [ ! -z "$tz" ]; then
-@@ -386,8 +440,18 @@
+@@ -386,8 +440,20 @@
  				echo "/dev/$partition none swap defaults,noauto 0 0" >> /slroot/live/union/etc/fstab
  			fi
  		else
@@ -1053,10 +1053,12 @@ diff -Naur slackware-live-0.4.orig/scripts/init slackware-live-0.4/scripts/init
 +			    mkdir -p /slroot/live/union/boot/efi
 +			    mount -t vfat /dev/$partition /slroot/live/union/boot/efi 2>/dev/null
 +			    if [ -d /slroot/live/union/boot/efi/EFI ]; then
++					echo "Adding EFI partition to /etc/fstab"
 +					echo "/dev/$partition /boot/efi vfat defaults 1 0" >> /slroot/live/union/etc/fstab
 +				    umount /slroot/live/union/boot/efi 2>/dev/null
 +				else
 +					umount /slroot/live/union/boot/efi 2>/dev/null
++					rm -rf /slroot/live/union/boot/efi
 +				fi
 +			fi	
 +		#	echo "/dev/$partition /mnt/$partition auto defaults,noauto,user 0 0" >> /slroot/live/union/etc/fstab
