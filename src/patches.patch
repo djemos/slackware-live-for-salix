@@ -1,6 +1,6 @@
 diff -Naur slackware-live-0.4.orig/scripts/build-slackware-live.sh slackware-live-0.4/scripts/build-slackware-live.sh
 --- slackware-live-0.4.orig/scripts/build-slackware-live.sh	2014-02-11 22:32:24.000000000 +0200
-+++ slackware-live-0.4/scripts/build-slackware-live.sh	2016-09-02 22:25:53.878170956 +0300
++++ slackware-live-0.4/scripts/build-slackware-live.sh	2016-09-07 18:03:12.795409071 +0300
 @@ -1,4 +1,7 @@
  #!/bin/sh
 +#Dimitris Tzemos <dijemos@gmail.com> (changes for slackel,salix)
@@ -550,7 +550,7 @@ diff -Naur slackware-live-0.4.orig/scripts/build-slackware-live.sh slackware-liv
 +		else #CSM
 +			if echo -e "print\nquit" | parted $installdevice | grep -q ": msdos$" || 
 +				gdisk -l $installdevice 2>/dev/null | grep -q " EF02 "; then
-+				grub-install --target=i386-pc --boot-directory /mnt/install/boot $installdevice  && grubstatus=0 #grub-bios-setup
++				grub-install --target=i386-pc --boot-directory /mnt/install/boot --recheck --force $installdevice  && grubstatus=0 #grub-bios-setup
 +			else
 +				echo "Warning : GRUB can't be installed:"
 +				#if [ -d /sys/firmware/efi ]; then
