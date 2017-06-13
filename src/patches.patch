@@ -1,6 +1,6 @@
 diff -Naur slackware-live-0.5.1.orig/scripts/build-slackware-live.sh slackware-live-0.5.1/scripts/build-slackware-live.sh
 --- slackware-live-0.5.1.orig/scripts/build-slackware-live.sh	2014-02-11 22:32:24.000000000 +0200
-+++ slackware-live-0.5.1/scripts/build-slackware-live.sh	2016-11-22 19:30:16.059696794 +0200
++++ slackware-live-0.5.1/scripts/build-slackware-live.sh	2017-06-13 03:06:40.354261105 +0300
 @@ -1,4 +1,9 @@
  #!/bin/sh
 +#Dimitris Tzemos <dijemos@gmail.com> (changes for slackel,salix)
@@ -23,7 +23,15 @@ diff -Naur slackware-live-0.5.1.orig/scripts/build-slackware-live.sh slackware-l
  function add_packages() {
  	packagesdirectory=$1
  	rootdirectory=$2
-@@ -57,20 +67,30 @@
+@@ -50,27 +60,37 @@
+ 	fi
+ 
+ 	mount --bind /proc $rootdirectory/proc
+-	chroot $rootdirectory mkinitrd -c -o /tmp/initrd.gz -s /tmp/initrd-tree -k $kv -m $moduleslist >/dev/null 2>&1
++	chroot $rootdirectory mkinitrd -c -o /tmp/initrd.gz -s /tmp/initrd-tree -k $kv -m $moduleslist -C dummy >/dev/null 2>&1
+ 	cd $rootdirectory/tmp/initrd-tree
+ 	find . -name "*.ko"
+ 	cd - >/dev/null
  	umount $rootdirectory/proc
  	rm -f $rootdirectory/tmp/initrd.gz
  	rm -f $rootdirectory/tmp/initrd-tree/{initrd-name,keymap,luksdev,resumedev,rootfs,rootdev,wait-for-root}
@@ -172,7 +180,7 @@ diff -Naur slackware-live-0.5.1.orig/scripts/build-slackware-live.sh slackware-l
 +				installmedia="$installdevice""2"
 +				#hybrid MBR with BIOS boot partition (1007K) EFI partition (300M) and live partition
 +				echo -e "2\nn\n\n\n+300M\nef00\nn\n\n\n\n\nr\nh\n1 2\nn\n\ny\n\nn\n\nn\nwq\ny\n" | gdisk $installdevice || return $PARTITIONERROR
-+				#echo -e "2\nn\n\n\n+32M\nef00\nn\n\n\n\n\nn\n128\n\n\nef02\nr\nh\n1 2\nn\n\ny\n\nn\nn\nwq\ny\n" | gdisk $installdevice || return $PARTITIONERROR
++				#echo -e "2\nn\n\n\n+300M\nef00\nn\n\n\n\n\nn\n128\n\n\nef02\nr\nh\n1 2\nn\n\ny\n\nn\nn\nwq\ny\n" | gdisk $installdevice || return $PARTITIONERROR
 +				# set the linux partition bootable
 +				sgdisk -p -A 2:set:2 $installdevice
 +				# confirm it was indeed set correctly
