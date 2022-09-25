@@ -1,6 +1,6 @@
-diff -Naur slackware-live-0.5.4.orig/doc/AUTHORS slackware-live-0.5.4/doc/AUTHORS
---- slackware-live-0.5.4.orig/doc/AUTHORS	2016-07-23 13:43:45.245305000 +0300
-+++ slackware-live-0.5.4/doc/AUTHORS	2017-07-30 23:22:25.000000000 +0300
+diff -Naur slackware-live-0.5_orig/doc/AUTHORS slackware-live-0.5/doc/AUTHORS
+--- slackware-live-0.5_orig/doc/AUTHORS	2016-07-23 13:43:45.000000000 +0300
++++ slackware-live-0.5/doc/AUTHORS	2022-09-09 10:22:46.000000000 +0300
 @@ -1,5 +1,6 @@
  Developpers:
  - Dimitris Tzemos <dijemos@gmail.com> (corrections for slackel,salix)
@@ -8,27 +8,27 @@ diff -Naur slackware-live-0.5.4.orig/doc/AUTHORS slackware-live-0.5.4/doc/AUTHOR
  - Frank Endres <frankendres@tuxfamily.org>
  - Sebastian Reisse <sebastian.j.reisse@gmx.net>
  
-diff -Naur slackware-live-0.5.4.orig/doc/COPYING slackware-live-0.5.4/doc/COPYING
---- slackware-live-0.5.4.orig/doc/COPYING	2014-02-06 20:06:57.000000000 +0200
-+++ slackware-live-0.5.4/doc/COPYING	2017-07-30 23:45:34.000000000 +0300
+diff -Naur slackware-live-0.5_orig/doc/COPYING slackware-live-0.5/doc/COPYING
+--- slackware-live-0.5_orig/doc/COPYING	2014-02-06 20:06:57.000000000 +0200
++++ slackware-live-0.5/doc/COPYING	2022-09-09 10:22:46.000000000 +0300
 @@ -1,3 +1,5 @@
 +- Dimitris Tzemos <dijemos@gmail.com> (corrections for slackel,salix)
 +- Eric Hameleers <alien@slackware.com> (encryption support)
  Slackware-Live, Copyright Frank Endres, 2010-2014
  
  This software is governed by the CeCILL license under french 
-diff -Naur slackware-live-0.5.4.orig/doc/ChangeLog slackware-live-0.5.4/doc/ChangeLog
---- slackware-live-0.5.4.orig/doc/ChangeLog	2016-07-23 13:39:20.968785000 +0300
-+++ slackware-live-0.5.4/doc/ChangeLog	2017-07-30 23:46:21.000000000 +0300
+diff -Naur slackware-live-0.5_orig/doc/ChangeLog slackware-live-0.5/doc/ChangeLog
+--- slackware-live-0.5_orig/doc/ChangeLog	2016-07-23 13:39:20.000000000 +0300
++++ slackware-live-0.5/doc/ChangeLog	2022-09-09 10:22:46.000000000 +0300
 @@ -1,4 +1,5 @@
  2015-10-11: Slackware-Live-0.4.5:
 +	+ Eric Hameleers <alien@slackware.com> (encryption support)
  	+ added support to format partitions using different filesystems (btrfs,ext2,ext3,ext4,reiserfs,jfs,xfs) by [Dimitris Tzemos <dijemos@gmail.com>]
  2015-01-15: Slackware-Live-0.4.3: fixed EFI installation
  	+ fixed fstab (added /dev/shm tmpfs, needed for Chromium Web browser for example)
-diff -Naur slackware-live-0.5.4.orig/doc/README slackware-live-0.5.4/doc/README
---- slackware-live-0.5.4.orig/doc/README	2014-02-06 20:12:04.000000000 +0200
-+++ slackware-live-0.5.4/doc/README	2017-07-30 23:49:14.000000000 +0300
+diff -Naur slackware-live-0.5_orig/doc/README slackware-live-0.5/doc/README
+--- slackware-live-0.5_orig/doc/README	2014-02-06 20:12:04.000000000 +0200
++++ slackware-live-0.5/doc/README	2022-09-09 10:22:46.000000000 +0300
 @@ -1,9 +1,11 @@
  Slackware Live is a live DVD/USB/NFS build and install tool written for Slackware (& Slackware64) Linux:
 +- Dimitris Tzemos <dijemos@gmail.com> (corrections for slackel,salix)
@@ -43,9 +43,9 @@ diff -Naur slackware-live-0.5.4.orig/doc/README slackware-live-0.5.4/doc/README
  
 -A GUI for the installation program and a synchronization tool (for home directory backup/restore) are provided separately;
 +A GUI for the installation program (SLI) is provided separately.
-diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-live-0.5.4/scripts/build-slackware-live.sh
---- slackware-live-0.5.4.orig/scripts/build-slackware-live.sh	2014-02-11 22:32:24.000000000 +0200
-+++ slackware-live-0.5.4/scripts/build-slackware-live.sh	2022-02-11 17:42:56.504322398 +0200
+diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-live-0.5/scripts/build-slackware-live.sh
+--- slackware-live-0.5_orig/scripts/build-slackware-live.sh	2014-02-11 22:32:24.000000000 +0200
++++ slackware-live-0.5/scripts/build-slackware-live.sh	2022-09-23 00:26:21.139307000 +0300
 @@ -1,4 +1,16 @@
  #!/bin/sh
 +#Dimitris Tzemos <dijemos@gmail.com> (changes for salix)
@@ -556,7 +556,7 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
  
  	sed -i /^root:/d /mnt/install/etc/shadow #setup root password
  	cat /etc/shadow | sed -n /^root:/p >> /mnt/install/etc/shadow
-@@ -397,12 +622,19 @@
+@@ -397,38 +622,107 @@
  		cp -f /etc/rc.d/rc.keymap /mnt/install/etc/rc.d/
  	fi
  	cp -f /etc/profile.d/lang.sh /mnt/install/etc/profile.d/
@@ -576,13 +576,24 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
 +	fi
 +
  	if [ -f /etc/localtime ] &&  [ -h /etc/localtime-copied-from  ]; then
- 		cp -f /etc/localtime /mnt/install/etc/
- 		cp -df /etc/localtime-copied-from /mnt/install/etc/
-@@ -411,24 +643,78 @@
+-		cp -f /etc/localtime /mnt/install/etc/
+-		cp -df /etc/localtime-copied-from /mnt/install/etc/
++		cp -df /etc/localtime /mnt/install/etc/localtime
++		cp -df /etc/localtime-copied-from /mnt/install/etc/localtime-copied-from
+ 	fi
+ 	if [ -f /etc/hardwareclock ]; then
  		cp -f /etc/hardwareclock /mnt/install/etc/
  	fi
  	#Copy end
 -
++	#################
++	ROOTPART=$(lsblk -l -o name,mountpoint| grep /mnt/install$|sed "s,\([^[:space:]]*\).*,/dev/\1,")
++	ROOTNAME=$(echo $ROOTPART|sed "s,/dev/,,")
++	ROOTUUID=$(lsblk -l -o name,uuid|grep ^$ROOTNAME|sed "s/[^ ]*[[:space:]]*//")
++	#FSTYPE=$(lsblk -l -o name,fstype|grep ^$ROOTNAME|sed "s/[^ ]*[[:space:]]*//")
++	#ROOTDEVICE=/dev/$(lsblk -l -o name,pkname|grep ^$ROOTNAME|sed "s/[^ ]*[[:space:]]*//")
++	#BRAND=$(grep ^NAME /mnt/etc/os-release|sed "s/.*=//")
++	#################
 +	echo "Setting up fstab"
  	#FSTab begin
  	cat > /mnt/install/etc/fstab << EOF
@@ -664,7 +675,7 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
  		if lsmod | grep -q $SYSINSTALLFS; then
  			moduleslist="$SYSINSTALLFS"
  		fi
-@@ -445,16 +731,32 @@
+@@ -445,16 +739,34 @@
  		done
  		moduleslist=`echo $moduleslist | sed 's/:$//'`
  		if [ ! -z "$moduleslist" ] && [ "$moduleslist" != "sg" ]; then
@@ -684,7 +695,9 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
 +			#kv=`basename /mnt/install/lib/modules/*`
 +			kv=`ls -l /mnt/install/boot/vmlinuz | cut -f2 -d'>' | sed s/^[^0-9]*//`
 +			MODULES="loop:xhci-pci:ohci-pci:ehci-pci:xhci-hcd:uhci-hcd:ehci-hcd:mmc-core:mmc-block:sdhci:sdhci-pci:sdhci-acpi:usb-storage:hid:usbhid:i2c-hid:hid-generic:hid-apple:hid-asus:hid-cherry:hid-logitech:hid-logitech-dj:hid-logitech-hidpp:hid-lenovo:hid-microsoft:hid_multitouch:crc32c-intel:fuse"
-+			chroot /mnt/install mkinitrd -c -f $SYSINSTALLFS -u -w 10 -o /boot/initrd.gz -r /dev/sdb1 -k $kv -m $MODULES
++			#chroot /mnt/install mkinitrd -c -f $SYSINSTALLFS -u -w 10 -o /boot/initrd.gz -r /dev/sdb1 -k $kv -m $MODULES
++			chroot /mnt/install mkinitrd -c -f $SYSINSTALLFS -u -w 10 -o /boot/initrd.gz -r UUID=$ROOTUUID -k $kv -m $MODULES
++			chroot /mnt/install rm -rf /boot/initrd-tree/
 +			chroot /mnt/install rm -rf /boot/initrd-tree/
 +			#cp /live/media/boot/initrd-usb.gz /mnt/install/boot/initrd.gz
 +		#fi	
@@ -700,7 +713,7 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
  		if [ -d /sys/firmware/efi ]; then #UEFI
  			modprobe efivars
  			efipartnum=`gdisk -l $installdevice | grep "EF00" | sed 's/  \+/ /g' | cut -f2 -d' '`
-@@ -462,7 +764,7 @@
+@@ -462,7 +774,7 @@
  			if [ ! -z "$efipartition" ]; then
  				mkdir -p /mnt/efi
  				mount $efipartition /mnt/efi
@@ -709,7 +722,7 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
  				if [ -d /mnt/efi/EFI/$efilabel ]; then
  					conflictpart=`cat /mnt/efi/EFI/$efilabel/elilo.conf | grep "append" | sed 's/.*root=\([^ ]*\).*/\1/'`
  					if [ "$conflictpart" == "$systempart" ]
-@@ -476,27 +778,69 @@
+@@ -476,27 +788,69 @@
  				cp /mnt/install/boot/vmlinuz /mnt/efi/EFI/$efilabel/
  				cat > /mnt/efi/EFI/$efilabel/elilo.conf << EOF
  timeout=1
@@ -785,7 +798,7 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
  bmp-colors = 255,0,255,0,255,0
  bmp-table = 60,6,1,16
  bmp-timer = 65,27,0,255
-@@ -514,11 +858,12 @@
+@@ -514,11 +868,12 @@
  
  image = /boot/vmlinuz
  root = $systempart
@@ -800,7 +813,7 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
  			fi
  			windowspartition=`fdisk -l $installdevice 2>/dev/null | grep "^$installdevice.*\*.*\(NTFS\|FAT32\)" | cut -f1 -d' '`
  			if [ ! -z "$windowspartition" ]; then
-@@ -529,16 +874,387 @@
+@@ -529,16 +884,693 @@
  table = $installdevice
  EOF
  			fi
@@ -818,8 +831,9 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
 +			fi
 +			#####	
 +			
-+		fi
-+	fi
+ 		fi
+ 	fi
+-	#LiLo end
 +   fi #LiLo end
 +  
 +   if [ "$bootloader" == "grub" ]; then
@@ -876,14 +890,14 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
 +		#for dir in sys proc dev; do umount /mnt/install/$dir; done
 +	fi
 +		#####
-+		if [ "$installdevice" != "/dev/sda" ]; then
-+			if [ "$installdevice" != "/dev/sdb" ]; then
-+				real_device=`echo $installdevice | cut -c6-8`
-+				sed -i "s/$real_device/sdb/g" /mnt/install/boot/grub/grub.cfg
-+				sed -i "s/hd2/hd1/g" /mnt/install/boot/grub/grub.cfg
-+				sed -i "s/ahci2/ahci1/g" /mnt/install/boot/grub/grub.cfg
-+			fi
- 		fi
++		#if [ "$installdevice" != "/dev/sda" ]; then
++		#	if [ "$installdevice" != "/dev/sdb" ]; then
++		#		real_device=`echo $installdevice | cut -c6-8`
++		#		sed -i "s/$real_device/sdb/g" /mnt/install/boot/grub/grub.cfg
++		#		sed -i "s/hd2/hd1/g" /mnt/install/boot/grub/grub.cfg
++		#		sed -i "s/ahci2/ahci1/g" /mnt/install/boot/grub/grub.cfg
++		#	fi
++		#fi
 +		#####
 +   fi # end grub
 +	
@@ -937,6 +951,174 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
 +	  fi
 +	fi
 +
++	if [ -f /mnt/install/etc/lightdm/lightdm.conf ]; then
++	cat > /mnt/install/etc/lightdm/lightdm.conf << EOF
++#
++# General configuration
++#
++# start-default-seat = True to always start one seat if none are defined in the configuration
++# greeter-user = User to run greeter as
++# minimum-display-number = Minimum display number to use for X servers
++# minimum-vt = First VT to run displays on
++# lock-memory = True to prevent memory from being paged to disk
++# user-authority-in-system-dir = True if session authority should be in the system location
++# guest-account-script = Script to be run to setup guest account
++# logind-check-graphical = True to on start seats that are marked as graphical by logind
++# log-directory = Directory to log information to
++# run-directory = Directory to put running state in
++# cache-directory = Directory to cache to
++# sessions-directory = Directory to find sessions
++# remote-sessions-directory = Directory to find remote sessions
++# greeters-directory = Directory to find greeters
++# backup-logs = True to move add a .old suffix to old log files when opening new ones
++# dbus-service = True if LightDM provides a D-Bus service to control it
++#
++[LightDM]
++#start-default-seat=true
++#greeter-user=gdm
++#minimum-display-number=0
++#minimum-vt=7
++#lock-memory=true
++#user-authority-in-system-dir=false
++#guest-account-script=guest-account
++#logind-check-graphical=false
++#log-directory=/var/log/lightdm
++#run-directory=/var/run/lightdm
++#cache-directory=/var/cache/lightdm
++#sessions-directory=/usr/share/lightdm/sessions:/usr/share/xsessions:/usr/share/wayland-sessions
++#remote-sessions-directory=/usr/share/lightdm/remote-sessions
++#greeters-directory=$XDG_DATA_DIRS/lightdm/greeters:$XDG_DATA_DIRS/xgreeters
++#backup-logs=true
++#dbus-service=true
++
++#
++# Seat configuration
++#
++# Seat configuration is matched against the seat name glob in the section, for example:
++# [Seat:*] matches all seats and is applied first.
++# [Seat:seat0] matches the seat named "seat0".
++# [Seat:seat-thin-client*] matches all seats that have names that start with "seat-thin-client".
++#
++# type = Seat type (local, xremote)
++# pam-service = PAM service to use for login
++# pam-autologin-service = PAM service to use for autologin
++# pam-greeter-service = PAM service to use for greeters
++# xserver-command = X server command to run (can also contain arguments e.g. X -special-option)
++# xmir-command = Xmir server command to run (can also contain arguments e.g. Xmir -special-option)
++# xserver-config = Config file to pass to X server
++# xserver-layout = Layout to pass to X server
++# xserver-allow-tcp = True if TCP/IP connections are allowed to this X server
++# xserver-share = True if the X server is shared for both greeter and session
++# xserver-hostname = Hostname of X server (only for type=xremote)
++# xserver-display-number = Display number of X server (only for type=xremote)
++# xdmcp-manager = XDMCP manager to connect to (implies xserver-allow-tcp=true)
++# xdmcp-port = XDMCP UDP/IP port to communicate on
++# xdmcp-key = Authentication key to use for XDM-AUTHENTICATION-1 (stored in keys.conf)
++# greeter-session = Session to load for greeter
++# greeter-hide-users = True to hide the user list
++# greeter-allow-guest = True if the greeter should show a guest login option
++# greeter-show-manual-login = True if the greeter should offer a manual login option
++# greeter-show-remote-login = True if the greeter should offer a remote login option
++# user-session = Session to load for users
++# allow-user-switching = True if allowed to switch users
++# allow-guest = True if guest login is allowed
++# guest-session = Session to load for guests (overrides user-session)
++# session-wrapper = Wrapper script to run session with
++# greeter-wrapper = Wrapper script to run greeter with
++# guest-wrapper = Wrapper script to run guest sessions with
++# display-setup-script = Script to run when starting a greeter session (runs as root)
++# display-stopped-script = Script to run after stopping the display server (runs as root)
++# greeter-setup-script = Script to run when starting a greeter (runs as root)
++# session-setup-script = Script to run when starting a user session (runs as root)
++# session-cleanup-script = Script to run when quitting a user session (runs as root)
++# autologin-guest = True to log in as guest by default
++# autologin-user = User to log in with by default (overrides autologin-guest)
++# autologin-user-timeout = Number of seconds to wait before loading default user
++# autologin-session = Session to load for automatic login (overrides user-session)
++# autologin-in-background = True if autologin session should not be immediately activated
++# exit-on-failure = True if the daemon should exit if this seat fails
++#
++[Seat:*]
++#type=local
++#pam-service=lightdm
++#pam-autologin-service=lightdm-autologin
++#pam-greeter-service=lightdm-greeter
++#xserver-command=X
++#xmir-command=Xmir
++#xserver-config=
++#xserver-layout=
++#xserver-allow-tcp=false
++#xserver-share=true
++#xserver-hostname=
++#xserver-display-number=
++#xdmcp-manager=
++#xdmcp-port=177
++#xdmcp-key=
++#greeter-session=example-gtk-gnome
++#greeter-hide-users=false
++#greeter-allow-guest=true
++#greeter-show-manual-login=false
++#greeter-show-remote-login=true
++#user-session=default
++#allow-user-switching=true
++#allow-guest=true
++#guest-session=
++#session-wrapper=lightdm-session
++#greeter-wrapper=
++#guest-wrapper=
++#display-setup-script=
++#display-stopped-script=
++#greeter-setup-script=
++#session-setup-script=
++#session-cleanup-script=
++#autologin-guest=false
++#autologin-user=
++#autologin-user-timeout=0
++#autologin-in-background=false
++#autologin-session=
++#exit-on-failure=false
++
++#
++# XDMCP Server configuration
++#
++# enabled = True if XDMCP connections should be allowed
++# port = UDP/IP port to listen for connections on
++# listen-address = Host/address to listen for XDMCP connections (use all addresses if not present)
++# key = Authentication key to use for XDM-AUTHENTICATION-1 or blank to not use authentication (stored in keys.conf)
++# hostname = Hostname to report to XDMCP clients (defaults to system hostname if unset)
++#
++# The authentication key is a 56 bit DES key specified in hex as 0xnnnnnnnnnnnnnn.  Alternatively
++# it can be a word and the first 7 characters are used as the key.
++#
++[XDMCPServer]
++#enabled=false
++#port=177
++#listen-address=
++#key=
++#hostname=
++
++#
++# VNC Server configuration
++#
++# enabled = True if VNC connections should be allowed
++# command = Command to run Xvnc server with
++# port = TCP/IP port to listen for connections on
++# listen-address = Host/address to listen for VNC connections (use all addresses if not present)
++# width = Width of display to use
++# height = Height of display to use
++# depth = Color depth of display to use
++#
++[VNCServer]
++#enabled=false
++#command=Xvnc
++#port=5900
++#listen-address=
++#width=1024
++#height=768
++#depth=8
++EOF
++	fi
++	
 +	if [ -f /mnt/install/etc/gdm/custom.conf ]; then
 +	cat > /mnt/install/etc/gdm/custom.conf << EOF
 +# GDM Custom Configuration file.
@@ -1020,8 +1202,7 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
 +# defined in the GDM System Defaults configuration file.
 +#
 +EOF
- 	fi
--	#LiLo end
++	fi
  	
 +	if [ -f /mnt/install/etc/slim.conf ]; then
 +	cat > /mnt/install/etc/slim.conf << EOF
@@ -1159,22 +1340,160 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
 +	chmod 644 /mnt/install/etc/HOSTNAME  
 +		
 +	# Use any available swap device:
-+    for SWAPD in $(blkid |grep TYPE="\"swap\"" |cut -d: -f1) ; do
++    for SWAPD in $(blkid | grep $installdevice | grep TYPE="\"swap\"" |cut -d: -f1) ; do
 +      echo "Enabling swapping to '$SWAPD'"
 +      echo "$SWAPD  swap  swap defaults  0  0" >> /mnt/install/etc/fstab
 +    done
 +
 +	  #####
-+		if [ "$installdevice" != "/dev/sda" ]; then
-+			if [ "$installdevice" != "/dev/sdb" ]; then
-+				real_device=`echo $installdevice | cut -c6-8`
-+				sed -i "s/$real_device/sdb/g" /mnt/install/etc/fstab
-+				sed -i "s/$real_device/sdb/g" /mnt/install/etc/mtab
-+			fi
-+		fi
++		#if [ "$installdevice" != "/dev/sda" ]; then
++		#	if [ "$installdevice" != "/dev/sdb" ]; then
++		#		real_device=`echo $installdevice | cut -c6-8`
++		#		sed -i "s/$real_device/sdb/g" /mnt/install/etc/fstab
++		#		sed -i "s/$real_device/sdb/g" /mnt/install/etc/mtab
++		#	fi
++		#fi
 +	   #####
++	lsblk -l -o uuid,type,name|grep part| \
++	sed "s, *\([^ ]*\) *[^ ]*  *\([^ ]*\).*,s;/dev/\2;UUID=\1;," > /tmp/part_list
++    if [ ! -f /mnt/install/etc/fstab ]; then
++		echo "No /mnt/install/etc/fstab found. Something should be wrong."
++		echo "Bye."
++	else
++		echo "Updating /mnt/install/etc/fstab paritions with UUID"
++	fi
++	if [ ! -f /mnt/install/etc/fstab.orig ]; then
++		cp /mnt/install/etc/fstab /mnt/install/etc/fstab.orig
++	fi
++	sed -f /tmp/part_list /mnt/install/etc/fstab >dummy
++	mv dummy /mnt/install/etc/fstab
++    ###############
++    # setup services
++    echo "setup services"
++    if [ -r /etc/rc.d/rc.alsa ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.alsa
++	fi
 +
++	if [ -r /etc/rc.d/rc.atalk ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.atalk
++	fi
 +
++	if [ -r /etc/rc.d/rc.bind ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.bind
++	fi
++
++	if [ -r /etc/rc.d/rc.bluetooth ]; then
++		chmod +x /mnt/install/etc/rc.d/rc.bluetooth
++	fi
++
++	if [ -r /etc/rc.d/rc.cups ]; then
++		chmod +x /mnt/install/etc/rc.d/rc.cups
++	fi
++
++	if [ -r /etc/rc.d/rc.cgmanager ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.cgmanager
++	fi
++
++	if [ -r /etc/rc.d/rc.cgproxy ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.cgproxy
++	fi
++
++	if [ -r /etc/rc.d/rc.dnsmasq ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.dnsmasq
++	fi
++
++	if [ -r /etc/rc.d/rc.fuse ]; then
++		chmod +x /mnt/install/etc/rc.d/rc.fuse
++	fi
++
++	if [ -r /etc/rc.d/rc.hald ]; then
++		chmod +x /mnt/install/etc/rc.d/rc.hald
++	fi
++
++	if [ -r /etc/rc.d/rc.hplip ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.hplip
++	fi
++
++	if [ -r /etc/rc.d/rc.httpd ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.httpd
++	fi
++
++	if [ -r /etc/rc.d/rc.inetd ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.inetd
++	fi
++
++	if [ -r /etc/rc.d/rc.ip_forward ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.ip_forward
++	fi
++
++	if [ -r /etc/rc.d/rc.lprng ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.lprng
++	fi
++
++	if [ -r /etc/rc.d/rc.messagebus ]; then
++		chmod +x /mnt/install/etc/rc.d/rc.messagebus
++	fi
++
++	if [ -r /etc/rc.d/rc.mysqld ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.mysqld
++	fi
++
++	if [ -r /etc/rc.d/rc.networkmanager ]; then
++		chmod +x /mnt/install/etc/rc.d/rc.networkmanager
++	fi
++
++	if [ -r /etc/rc.d/rc.ntpd ]; then
++		chmod +x /mnt/install/etc/rc.d/rc.ntpd
++	fi
++
++	if [ -r /etc/rc.d/rc.pcmcia ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.pcmcia
++	fi
++
++	if [ -r /etc/rc.d/rc.pulseaudio ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.pulseaudio
++	fi
++
++	if [ -r /etc/rc.d/rc.rpc ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.rpc
++	fi
++
++	if [ -r /etc/rc.d/rc.samba ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.samba
++	fi
++
++	if [ -r /etc/rc.d/rc.saslauthd ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.saslauthd
++	fi
++
++	if [ -r /etc/rc.d/rc.sendmail ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.sendmail
++	fi
++
++	if [ -r /etc/rc.d/rc.serial ]; then
++		chmod +x /mnt/install/etc/rc.d/rc.serial
++	fi
++
++	if [ -r /etc/rc.d/rc.snmpd ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.snmpd
++	fi
++
++	if [ -r /etc/rc.d/rc.syslog ]; then
++		chmod +x /mnt/install/etc/rc.d/rc.syslog
++	fi
++
++	if [ -r /etc/rc.d/rc.sshd ]; then
++		chmod -x /mnt/install/etc/rc.d/rc.sshd
++	fi
++
++	if [ -r /etc/rc.d/rc.wicd ]; then
++		chmod +x /mnt/install/etc/rc.d/rc.wicd
++	fi
++
++	if [ -r /etc/rc.d/rc.wireless ]; then
++		chmod +x /mnt/install/etc/rc.d/rc.wireless
++	fi
++    ################### 
 +	for dir in sys proc dev tmp; do umount /mnt/install/$dir; done
 +
 +	if [ "$home_dir" != "" ] && [ "$home_dir" != "$systempart" ]; then
@@ -1191,7 +1510,7 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
  	return 0
  }
  
-@@ -659,7 +1375,14 @@
+@@ -659,7 +1691,14 @@
  	moduleslist=$4
  	if [ -d "$rootdirectory" ] && [ ! -z "$livedirectory" ]; then
  		if [ -z "$moduleslist" ]; then
@@ -1207,7 +1526,7 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
  		fi
  		init_live $rootdirectory $livedirectory $moduleslist
  	else
-@@ -730,6 +1453,16 @@
+@@ -730,6 +1769,16 @@
  	rootdirectory=$2
  	systempart=$3
  	loadersetup=$4
@@ -1224,7 +1543,7 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
  	if [ -d "$rootdirectory" ] && [ -b "$systempart" ]; then
  		systemsize=`du -s -m $rootdirectory | sed 's/\t.*//'`
  		device=`echo $systempart | cut -c6-8`
-@@ -741,11 +1474,14 @@
+@@ -741,11 +1790,14 @@
  			echo "error: insufficant space on device '$systempart'"
  			exit $INSUFFICIENTSPACE
  		else
@@ -1241,7 +1560,7 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
  		exit $CMDERROR
  	fi
  	;;
-@@ -780,7 +1516,7 @@
+@@ -780,7 +1832,7 @@
  	echo "`basename $0` --module root_dir live_dir module_file [-xz|-gzip] [-optional]"
  	echo "`basename $0` --iso live_dir iso_file"
  	echo "`basename $0` --usb live_dir device"
@@ -1250,9 +1569,9 @@ diff -Naur slackware-live-0.5.4.orig/scripts/build-slackware-live.sh slackware-l
  	echo "`basename $0` --share live_dir listen_interface ip_range [modules_list|auto]"
  	echo "`basename $0` --unshare"
  	exit $CMDERROR
-diff -Naur slackware-live-0.5.4.orig/scripts/init slackware-live-0.5.4/scripts/init
---- slackware-live-0.5.4.orig/scripts/init	2014-02-07 11:04:23.000000000 +0200
-+++ slackware-live-0.5.4/scripts/init	2022-02-11 17:43:04.902448789 +0200
+diff -Naur slackware-live-0.5_orig/scripts/init slackware-live-0.5/scripts/init
+--- slackware-live-0.5_orig/scripts/init	2014-02-07 11:04:23.000000000 +0200
++++ slackware-live-0.5/scripts/init	2022-09-09 10:23:55.000000000 +0300
 @@ -1,4 +1,15 @@
  #!/bin/ash
 +#Dimitris Tzemos <dijemos@gmail.com> (changes for salix)
@@ -1807,7 +2126,7 @@ diff -Naur slackware-live-0.5.4.orig/scripts/init slackware-live-0.5.4/scripts/i
  fi
  END
  		chmod +x /slroot/live/union/etc/profile.d/x.sh
-@@ -328,30 +443,67 @@
+@@ -328,35 +443,73 @@
  	then sed -i s/^export\ LANG=.*/export\ LANG=$locale/ /slroot/live/union/etc/profile.d/lang.sh
  	else echo "export LANG=$locale" >> /slroot/live/union/etc/profile.d/lang.sh
  	fi
@@ -1893,7 +2212,14 @@ diff -Naur slackware-live-0.5.4.orig/scripts/init slackware-live-0.5.4/scripts/i
  fi
  
  if [ ! -z "$tz" ]; then
-@@ -373,23 +525,36 @@
+ 	if [ -f /slroot/usr/share/zoneinfo/$tz ]; then
+-		cat /slroot/usr/share/zoneinfo/$tz > /slroot/etc/localtime
++		#cat /slroot/usr/share/zoneinfo/$tz > /slroot/etc/localtime
++		ln -sf /usr/share/zoneinfo/$tz /slroot/etc/localtime
+ 		ln -sf /usr/share/zoneinfo/$tz /slroot/etc/localtime-copied-from
+ 	fi
+ fi
+@@ -373,23 +526,36 @@
  fi
  
  #detect fixed partitions
@@ -1941,7 +2267,7 @@ diff -Naur slackware-live-0.5.4.orig/scripts/init slackware-live-0.5.4/scripts/i
  done
  
  #setup root password
-@@ -404,10 +569,7 @@
+@@ -404,10 +570,7 @@
  umount /proc
  umount /sys
  mount -r -o remount /slroot 2>/dev/null #remount root directory read-only for normal startup
