@@ -1,6 +1,6 @@
 diff -Naur slackware-live-0.5_orig/doc/AUTHORS slackware-live-0.5/doc/AUTHORS
 --- slackware-live-0.5_orig/doc/AUTHORS	2016-07-23 13:43:45.000000000 +0300
-+++ slackware-live-0.5/doc/AUTHORS	2024-11-29 02:21:51.791938899 +0200
++++ slackware-live-0.5/doc/AUTHORS	2024-11-29 04:45:46.195966581 +0200
 @@ -1,5 +1,6 @@
  Developpers:
  - Dimitris Tzemos <dijemos@gmail.com> (corrections for slackel,salix)
@@ -10,7 +10,7 @@ diff -Naur slackware-live-0.5_orig/doc/AUTHORS slackware-live-0.5/doc/AUTHORS
  
 diff -Naur slackware-live-0.5_orig/doc/COPYING slackware-live-0.5/doc/COPYING
 --- slackware-live-0.5_orig/doc/COPYING	2014-02-06 20:06:57.000000000 +0200
-+++ slackware-live-0.5/doc/COPYING	2024-11-29 02:21:51.791938899 +0200
++++ slackware-live-0.5/doc/COPYING	2024-11-29 04:45:46.195966581 +0200
 @@ -1,3 +1,5 @@
 +- Dimitris Tzemos <dijemos@gmail.com> (corrections for slackel,salix)
 +- Eric Hameleers <alien@slackware.com> (encryption support)
@@ -19,7 +19,7 @@ diff -Naur slackware-live-0.5_orig/doc/COPYING slackware-live-0.5/doc/COPYING
  This software is governed by the CeCILL license under french 
 diff -Naur slackware-live-0.5_orig/doc/ChangeLog slackware-live-0.5/doc/ChangeLog
 --- slackware-live-0.5_orig/doc/ChangeLog	2016-07-23 13:39:20.000000000 +0300
-+++ slackware-live-0.5/doc/ChangeLog	2024-11-29 02:21:51.791938899 +0200
++++ slackware-live-0.5/doc/ChangeLog	2024-11-29 04:45:46.205966514 +0200
 @@ -1,4 +1,5 @@
  2015-10-11: Slackware-Live-0.4.5:
 +	+ Eric Hameleers <alien@slackware.com> (encryption support)
@@ -28,7 +28,7 @@ diff -Naur slackware-live-0.5_orig/doc/ChangeLog slackware-live-0.5/doc/ChangeLo
  	+ fixed fstab (added /dev/shm tmpfs, needed for Chromium Web browser for example)
 diff -Naur slackware-live-0.5_orig/doc/README slackware-live-0.5/doc/README
 --- slackware-live-0.5_orig/doc/README	2014-02-06 20:12:04.000000000 +0200
-+++ slackware-live-0.5/doc/README	2024-11-29 02:21:51.791938899 +0200
++++ slackware-live-0.5/doc/README	2024-11-29 04:45:46.208966494 +0200
 @@ -1,9 +1,11 @@
  Slackware Live is a live DVD/USB/NFS build and install tool written for Slackware (& Slackware64) Linux:
 +- Dimitris Tzemos <dijemos@gmail.com> (corrections for slackel,salix)
@@ -45,7 +45,7 @@ diff -Naur slackware-live-0.5_orig/doc/README slackware-live-0.5/doc/README
 +A GUI for the installation program (SLI) is provided separately.
 diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-live-0.5/scripts/build-slackware-live.sh
 --- slackware-live-0.5_orig/scripts/build-slackware-live.sh	2014-02-11 22:32:24.000000000 +0200
-+++ slackware-live-0.5/scripts/build-slackware-live.sh	2024-11-29 02:21:51.791938899 +0200
++++ slackware-live-0.5/scripts/build-slackware-live.sh	2024-11-29 04:45:46.255966183 +0200
 @@ -1,4 +1,16 @@
  #!/bin/sh
 +#Dimitris Tzemos <dijemos@gmail.com> (changes for salix)
@@ -1571,7 +1571,7 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
  	exit $CMDERROR
 diff -Naur slackware-live-0.5_orig/scripts/init slackware-live-0.5/scripts/init
 --- slackware-live-0.5_orig/scripts/init	2014-02-07 11:04:23.000000000 +0200
-+++ slackware-live-0.5/scripts/init	2024-11-29 02:24:37.166964231 +0200
++++ slackware-live-0.5/scripts/init	2024-11-29 04:48:49.902704945 +0200
 @@ -1,4 +1,15 @@
  #!/bin/ash
 +#Dimitris Tzemos <dijemos@gmail.com> (changes for salix)
@@ -1664,10 +1664,11 @@ diff -Naur slackware-live-0.5_orig/scripts/init slackware-live-0.5/scripts/init
  sleeptime=0
 -alreadycheckedpartitions=""
 -while [ "$mediadetected" == "none" ] && [ "$sleeptime" != "10" ]; do #try each seconds, but don't wait (USB) more than 10 seconds
-+while [ "$mediadetected" == "none" ] && [ ! -z "$fromiso" ] && [ -z "$isodevice" ] && [ "$sleeptime" != "10" ]; do #try each seconds, but don't wait (USB) more than 10 seconds
++while [ "$mediadetected" == "none" ] && [ ! -z "$fromiso" ] && [ "$sleeptime" != "10" ]; do #try each seconds, but don't wait (USB) more than 10 seconds
  	for partition in `cat /proc/partitions | sed -e 1d -e 2d | cut -c26-`; do
- 		if mount -o ro /dev/$partition /slroot/live/media >/dev/null 2>/dev/null; then
+-		if mount -o ro /dev/$partition /slroot/live/media >/dev/null 2>/dev/nul; then
 -			if [ -f /slroot/live/media/boot/liveboot ]; then
++		if mount -o ro /dev/$partition /slroot/live/media >/dev/null 2>/dev/null; then
 +			if [ -f /slroot/live/media/$fromiso ]; then
  				if [ "$partition" == "sr0" ] || [ "$partition" == "sr1" ]
  				then mediadetected="cd"
