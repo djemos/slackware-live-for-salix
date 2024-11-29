@@ -1666,7 +1666,7 @@ diff -Naur slackware-live-0.5_orig/scripts/init slackware-live-0.5/scripts/init
 -while [ "$mediadetected" == "none" ] && [ "$sleeptime" != "10" ]; do #try each seconds, but don't wait (USB) more than 10 seconds
 +while [ "$mediadetected" == "none" ] && [ ! -z "$fromiso" ] && [ -z "$isodevice" ] && [ "$sleeptime" != "10" ]; do #try each seconds, but don't wait (USB) more than 10 seconds
  	for partition in `cat /proc/partitions | sed -e 1d -e 2d | cut -c26-`; do
- 		if mount -o ro /dev/$partition /slroot/live/media >/dev/null 2>/dev/nul; then
+ 		if mount -o ro /dev/$partition /slroot/live/media >/dev/null 2>/dev/null; then
 -			if [ -f /slroot/live/media/boot/liveboot ]; then
 +			if [ -f /slroot/live/media/$fromiso ]; then
  				if [ "$partition" == "sr0" ] || [ "$partition" == "sr1" ]
