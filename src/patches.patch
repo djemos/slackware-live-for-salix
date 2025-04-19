@@ -1,6 +1,6 @@
 diff -Naur slackware-live-0.5_orig/doc/AUTHORS slackware-live-0.5/doc/AUTHORS
 --- slackware-live-0.5_orig/doc/AUTHORS	2016-07-23 13:43:45.000000000 +0300
-+++ slackware-live-0.5/doc/AUTHORS	2024-11-30 14:08:02.583483323 +0200
++++ slackware-live-0.5/doc/AUTHORS	2024-11-30 14:08:02.000000000 +0200
 @@ -1,5 +1,6 @@
  Developpers:
  - Dimitris Tzemos <dijemos@gmail.com> (corrections for slackel,salix)
@@ -10,7 +10,7 @@ diff -Naur slackware-live-0.5_orig/doc/AUTHORS slackware-live-0.5/doc/AUTHORS
  
 diff -Naur slackware-live-0.5_orig/doc/COPYING slackware-live-0.5/doc/COPYING
 --- slackware-live-0.5_orig/doc/COPYING	2014-02-06 20:06:57.000000000 +0200
-+++ slackware-live-0.5/doc/COPYING	2024-11-30 14:08:02.583483323 +0200
++++ slackware-live-0.5/doc/COPYING	2024-11-30 14:08:02.000000000 +0200
 @@ -1,3 +1,5 @@
 +- Dimitris Tzemos <dijemos@gmail.com> (corrections for slackel,salix)
 +- Eric Hameleers <alien@slackware.com> (encryption support)
@@ -19,7 +19,7 @@ diff -Naur slackware-live-0.5_orig/doc/COPYING slackware-live-0.5/doc/COPYING
  This software is governed by the CeCILL license under french 
 diff -Naur slackware-live-0.5_orig/doc/ChangeLog slackware-live-0.5/doc/ChangeLog
 --- slackware-live-0.5_orig/doc/ChangeLog	2016-07-23 13:39:20.000000000 +0300
-+++ slackware-live-0.5/doc/ChangeLog	2024-11-30 14:08:02.583483323 +0200
++++ slackware-live-0.5/doc/ChangeLog	2024-11-30 14:08:02.000000000 +0200
 @@ -1,4 +1,5 @@
  2015-10-11: Slackware-Live-0.4.5:
 +	+ Eric Hameleers <alien@slackware.com> (encryption support)
@@ -28,7 +28,7 @@ diff -Naur slackware-live-0.5_orig/doc/ChangeLog slackware-live-0.5/doc/ChangeLo
  	+ fixed fstab (added /dev/shm tmpfs, needed for Chromium Web browser for example)
 diff -Naur slackware-live-0.5_orig/doc/README slackware-live-0.5/doc/README
 --- slackware-live-0.5_orig/doc/README	2014-02-06 20:12:04.000000000 +0200
-+++ slackware-live-0.5/doc/README	2024-11-30 14:08:02.583483323 +0200
++++ slackware-live-0.5/doc/README	2024-11-30 14:08:02.000000000 +0200
 @@ -1,9 +1,11 @@
  Slackware Live is a live DVD/USB/NFS build and install tool written for Slackware (& Slackware64) Linux:
 +- Dimitris Tzemos <dijemos@gmail.com> (corrections for slackel,salix)
@@ -45,7 +45,7 @@ diff -Naur slackware-live-0.5_orig/doc/README slackware-live-0.5/doc/README
 +A GUI for the installation program (SLI) is provided separately.
 diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-live-0.5/scripts/build-slackware-live.sh
 --- slackware-live-0.5_orig/scripts/build-slackware-live.sh	2014-02-11 22:32:24.000000000 +0200
-+++ slackware-live-0.5/scripts/build-slackware-live.sh	2024-11-30 14:08:02.618483037 +0200
++++ slackware-live-0.5/scripts/build-slackware-live.sh	2025-04-17 11:09:03.421192409 +0300
 @@ -1,4 +1,16 @@
  #!/bin/sh
 +#Dimitris Tzemos <dijemos@gmail.com> (changes for salix)
@@ -591,8 +591,8 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
 +	ROOTNAME=$(echo $ROOTPART|sed "s,/dev/,,")
 +	ROOTUUID=$(lsblk -l -o name,uuid|grep ^$ROOTNAME|sed "s/[^ ]*[[:space:]]*//")
 +	#FSTYPE=$(lsblk -l -o name,fstype|grep ^$ROOTNAME|sed "s/[^ ]*[[:space:]]*//")
-+	#ROOTDEVICE=/dev/$(lsblk -l -o name,pkname|grep ^$ROOTNAME|sed "s/[^ ]*[[:space:]]*//")
-+	#BRAND=$(grep ^NAME /mnt/etc/os-release|sed "s/.*=//")
++	ROOTDEVICE=/dev/$(lsblk -l -o name,pkname|grep ^$ROOTNAME|sed "s/[^ ]*[[:space:]]*//")
++	BRAND=$(grep ^NAME /mnt/etc/os-release|sed "s/.*=//")
 +	#################
 +	echo "Setting up fstab"
  	#FSTab begin
@@ -675,7 +675,7 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
  		if lsmod | grep -q $SYSINSTALLFS; then
  			moduleslist="$SYSINSTALLFS"
  		fi
-@@ -445,16 +739,34 @@
+@@ -445,16 +739,52 @@
  		done
  		moduleslist=`echo $moduleslist | sed 's/:$//'`
  		if [ ! -z "$moduleslist" ] && [ "$moduleslist" != "sg" ]; then
@@ -688,8 +688,17 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
  	fi
 +		
 +	#####
-+     installdevice=`echo $systempart | cut -c1-8`
-+     if [ "$installdevice" != "/dev/sda" ]; then 
++     #checkinstalldevice=`echo $systempart | cut -c6-7`
++     #if [ "$checkinstalldevice" == "sd" ]; then
++	 #    installdevice=`echo $systempart | cut -c1-8`
++     #elif [ "$checkinstalldevice" == "nv" ] || [ "$checkinstalldevice" == "mm" ];  then
++	 #    installdevice=`echo $systempart | cut -c1-12`
++     #fi
++     #debug
++     #echo "installdevice="$installdevice
++	 #echo "checkinstalldevice"=$checkinstalldevice
++	 installdevice=$ROOTDEVICE 
++     #if [ "$installdevice" != "/dev/sda" ]; then 
 +		#if [ -f /live/media/boot/initrd-usb.gz ]; then 
 +			echo "Copying initrd"
 +			#kv=`basename /mnt/install/lib/modules/*`
@@ -698,22 +707,32 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
 +			#chroot /mnt/install mkinitrd -c -f $SYSINSTALLFS -u -w 10 -o /boot/initrd.gz -r /dev/sdb1 -k $kv -m $MODULES
 +			chroot /mnt/install mkinitrd -c -f $SYSINSTALLFS -u -w 10 -o /boot/initrd.gz -r UUID=$ROOTUUID -k $kv -m $MODULES
 +			chroot /mnt/install rm -rf /boot/initrd-tree/
-+			chroot /mnt/install rm -rf /boot/initrd-tree/
 +			#cp /live/media/boot/initrd-usb.gz /mnt/install/boot/initrd.gz
 +		#fi	
-+     fi
++     #fi
 +     #####
  	#InitRD end
 -	
 +   if [ "$bootloader" == "lilo" ]; then
  	#LiLo begin
  	if [ "$loadersetup" == "-auto" ]; then
- 		installdevice=`echo $systempart | cut -c1-8`
+-		installdevice=`echo $systempart | cut -c1-8`
++		
++		#checkinstalldevice=`echo $systempart | cut -c6-7`
++        #if [ "$checkinstalldevice" == "sd" ]; then
++	    #   installdevice=`echo $systempart | cut -c1-8`
++        #elif [ "$checkinstalldevice" == "nv" ] || [ "$checkinstalldevice" == "mm" ];  then
++	    #   installdevice=`echo $systempart | cut -c1-12`
++        #fi
++        #debug
++        #echo "installdevice="$installdevice
++	    #echo "checkinstalldevice"=$checkinstalldevice
++	    installdevice=$ROOTDEVICE
 +		echo "Setting (e)Lilo"
  		if [ -d /sys/firmware/efi ]; then #UEFI
  			modprobe efivars
  			efipartnum=`gdisk -l $installdevice | grep "EF00" | sed 's/  \+/ /g' | cut -f2 -d' '`
-@@ -462,7 +774,7 @@
+@@ -462,7 +792,7 @@
  			if [ ! -z "$efipartition" ]; then
  				mkdir -p /mnt/efi
  				mount $efipartition /mnt/efi
@@ -722,7 +741,7 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
  				if [ -d /mnt/efi/EFI/$efilabel ]; then
  					conflictpart=`cat /mnt/efi/EFI/$efilabel/elilo.conf | grep "append" | sed 's/.*root=\([^ ]*\).*/\1/'`
  					if [ "$conflictpart" == "$systempart" ]
-@@ -476,27 +788,69 @@
+@@ -476,27 +806,74 @@
  				cp /mnt/install/boot/vmlinuz /mnt/efi/EFI/$efilabel/
  				cat > /mnt/efi/EFI/$efilabel/elilo.conf << EOF
  timeout=1
@@ -731,23 +750,26 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
  
  image=vmlinuz
 -    label=slackware
+-    append="root=$systempart ro"
 +    label=$SALIX_FLAVOR
-     append="root=$systempart ro"
++    append="root=UUID=$ROOTUUID ro"
  	read-only
  EOF
 +
 +				#####
-+				if [ "$installdevice" != "/dev/sda" ]; then
-+					if [ "$installdevice" != "/dev/sdb" ]; then
-+						real_device=`echo $installdevice | cut -c6-8`
-+						sed -i "s/$real_device/sdb/g" /mnt/efi/EFI/$efilabel/elilo.conf
-+					fi
-+				fi
++			#if [ "$checkinstalldevice" == "sd" ]; then
++			#	if [ "$installdevice" != "/dev/sda" ] || [ "$installdevice" != "/dev/nvme0n1" ] || [ "$installdevice" != "/dev/mmcblk0" ]; then
++			#		if [ "$installdevice" != "/dev/sdb" ]; then
++			#			real_device=`echo $installdevice | cut -c6-8`
++			#			sed -i "s/$real_device/sdb/g" /mnt/efi/EFI/$efilabel/elilo.conf
++			#		fi
++			#	fi
++			#fi	
 +				#####
 +				
  				if [ -f /mnt/install/boot/initrd.gz ]; then
--					echo "  initrd=initrd.gz" >> /mnt/efi/EFI/$efilabel/elilo.conf
-+					echo "  initrd=/boot/initrd.gz" >> /mnt/efi/EFI/$efilabel/elilo.conf
++					#echo "  initrd=/boot/initrd.gz" >> /mnt/efi/EFI/$efilabel/elilo.conf
+ 					echo "  initrd=initrd.gz" >> /mnt/efi/EFI/$efilabel/elilo.conf
  					cp /mnt/install/boot/initrd.gz /mnt/efi/EFI/$efilabel/
  				fi
 +				
@@ -760,6 +782,7 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
 +			# Add the EFI System Partition to /etc/fstab:
 +			mkdir -p /mnt/install/boot/efi
 +			echo "$efipartition /boot/efi vfat defaults 1 0 " >> /mnt/install/etc/fstab
++			#if [ "$installdevice" != "/dev/sda" ] || [ "$installdevice" != "/dev/nvme0n1" ] || [ "$installdevice" != "/dev/mmcblk0" ] ; then
 +			if [ "$installdevice" != "/dev/sda" ]; then
 +				mkdir -p /mnt/efi
 +				mount $efipartition /mnt/efi
@@ -772,19 +795,20 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
 +
 +image=/EFI/BOOT/vmlinuz
 +    label=$SALIX_FLAVOR
-+    append="root=$systempart ro"
++    append="root=UUID=$ROOTUUID ro"
 +	read-only
 +	initrd=/EFI/BOOT/initrd.gz
 +EOF
-+
-+				if [ "$installdevice" != "/dev/sdb" ]; then
-+						real_device=`echo $installdevice | cut -c6-8`
-+						sed -i "s/$real_device/sdb/g" /mnt/efi/EFI/BOOT/elilo.conf
-+						sed -i "s/$real_device/sdb/g" /mnt/install/etc/fstab
-+				fi
++              #if [ "$checkinstalldevice" == "sd" ]; then
++				#if [ "$installdevice" != "/dev/sdb" ]; then
++				#		real_device=`echo $installdevice | cut -c6-8`
++				#		sed -i "s/$real_device/sdb/g" /mnt/efi/EFI/BOOT/elilo.conf
++				#		sed -i "s/$real_device/sdb/g" /mnt/install/etc/fstab
++				#fi
++				#fi
 +				umount /mnt/efi
 +				rmdir /mnt/efi
-+			fi	
++		    fi	
 +			
 +			
  		else #BIOS
@@ -798,11 +822,13 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
  bmp-colors = 255,0,255,0,255,0
  bmp-table = 60,6,1,16
  bmp-timer = 65,27,0,255
-@@ -514,11 +868,12 @@
+@@ -513,12 +890,13 @@
+ compact
  
  image = /boot/vmlinuz
- root = $systempart
+-root = $systempart
 -label = Linux
++root = "UUID=$ROOTUUID "
 +label = $SALIX_FLAVOR_LILO
  read-only
  EOF
@@ -813,7 +839,7 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
  			fi
  			windowspartition=`fdisk -l $installdevice 2>/dev/null | grep "^$installdevice.*\*.*\(NTFS\|FAT32\)" | cut -f1 -d' '`
  			if [ ! -z "$windowspartition" ]; then
-@@ -529,16 +884,693 @@
+@@ -529,16 +907,705 @@
  table = $installdevice
  EOF
  			fi
@@ -823,12 +849,14 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
 -			chroot /mnt/install umount /proc
 +			#chroot /mnt/install umount /proc
 +			#####
-+			if [ "$installdevice" != "/dev/sda" ]; then
-+				if [ "$installdevice" != "/dev/sdb" ]; then
-+					real_device=`echo $installdevice | cut -c6-8`
-+					sed -i "s/$real_device/sdb/g" /mnt/install/etc/lilo.conf
-+				fi
-+			fi
++		   #if [ "$checkinstalldevice" == "sd" ]; then
++			#if [ "$installdevice" != "/dev/sda" ]; then
++			#	if [ "$installdevice" != "/dev/sdb" ]; then
++			#		real_device=`echo $installdevice | cut -c6-8`
++			#		sed -i "s/$real_device/sdb/g" /mnt/install/etc/lilo.conf
++			#	fi
++			#fi
++		   #fi	
 +			#####	
 +			
  		fi
@@ -840,7 +868,16 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
 +	#grub begin
 +	if [ "$loadersetup" == "-auto" ]; then
 +		grustatus=$GRUBERROR
-+		installdevice=`echo $systempart | cut -c1-8`
++		installdevice=$ROOTDEVICE
++		#checkinstalldevice=`echo $systempart | cut -c6-7`
++        #if [ "$checkinstalldevice" == "sd" ]; then
++	    #  installdevice=`echo $systempart | cut -c1-8`
++       # elif [ "$checkinstalldevice" == "nv" ] || [ "$checkinstalldevice" == "mm" ];  then
++	   #   installdevice=`echo $systempart | cut -c1-12`
++       # fi
++        #debug
++        #echo "installdevice="$installdevice
++	    #echo "checkinstalldevice"=$checkinstalldevice
 +		echo "Installing Grub Boot Loader on $installdevice"
 +		efipartnum=`gdisk -l $installdevice 2>/dev/null | grep " EF00 " | sed 's/  */:/g' | cut -f2 -d:`
 +		#if [ -d /sys/firmware/efi ] && [ ! -z "$efipartnum" ]; then #EFI
@@ -861,6 +898,7 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
 +			# Add the EFI System Partition to /etc/fstab:
 +			mkdir -p /mnt/install/boot/efi
 +			echo "$efipartition /boot/efi vfat defaults 1 0 " >> /mnt/install/etc/fstab
++			#if [ "$installdevice" != "/dev/sda" ] || [ "$installdevice" != "/dev/nvme0n1" ] || [ "$installdevice" != "/dev/mmcblk0" ]; then
 +			if [ "$installdevice" != "/dev/sda" ]; then
 +				mkdir -p /mnt/efi
 +				mount $efipartition /mnt/efi
@@ -1510,7 +1548,7 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
  	return 0
  }
  
-@@ -659,7 +1691,14 @@
+@@ -659,7 +1726,14 @@
  	moduleslist=$4
  	if [ -d "$rootdirectory" ] && [ ! -z "$livedirectory" ]; then
  		if [ -z "$moduleslist" ]; then
@@ -1526,7 +1564,7 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
  		fi
  		init_live $rootdirectory $livedirectory $moduleslist
  	else
-@@ -730,6 +1769,16 @@
+@@ -730,6 +1804,16 @@
  	rootdirectory=$2
  	systempart=$3
  	loadersetup=$4
@@ -1543,7 +1581,7 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
  	if [ -d "$rootdirectory" ] && [ -b "$systempart" ]; then
  		systemsize=`du -s -m $rootdirectory | sed 's/\t.*//'`
  		device=`echo $systempart | cut -c6-8`
-@@ -741,11 +1790,14 @@
+@@ -741,11 +1825,14 @@
  			echo "error: insufficant space on device '$systempart'"
  			exit $INSUFFICIENTSPACE
  		else
@@ -1560,7 +1598,7 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
  		exit $CMDERROR
  	fi
  	;;
-@@ -780,7 +1832,7 @@
+@@ -780,7 +1867,7 @@
  	echo "`basename $0` --module root_dir live_dir module_file [-xz|-gzip] [-optional]"
  	echo "`basename $0` --iso live_dir iso_file"
  	echo "`basename $0` --usb live_dir device"
@@ -1571,7 +1609,7 @@ diff -Naur slackware-live-0.5_orig/scripts/build-slackware-live.sh slackware-liv
  	exit $CMDERROR
 diff -Naur slackware-live-0.5_orig/scripts/init slackware-live-0.5/scripts/init
 --- slackware-live-0.5_orig/scripts/init	2014-02-07 11:04:23.000000000 +0200
-+++ slackware-live-0.5/scripts/init	2024-11-30 14:09:13.532911857 +0200
++++ slackware-live-0.5/scripts/init	2024-11-30 14:09:13.000000000 +0200
 @@ -1,4 +1,15 @@
  #!/bin/ash
 +#Dimitris Tzemos <dijemos@gmail.com> (changes for salix)

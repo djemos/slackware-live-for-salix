@@ -4,7 +4,7 @@ cd $(dirname $0)
 mkdir -p pkg
 export DESTDIR=$PWD/pkg
 ./install.sh
-VER=0.5.4
+VER=0.5.5
 RLZ=1dj
 cd pkg
 
